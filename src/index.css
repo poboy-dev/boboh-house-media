@@ -5,32 +5,26 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 26 24 44;
-
-    --card: 0 0% 100%;
-    --card-foreground: 26 24 44;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 26 24 44;
-
-    --primary: 255 135 245;
+    --foreground: 222 47% 11%;
+    
+    --primary: 44 96% 52%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 126 105 171;
+    
+    --secondary: 354 70% 54%;
     --secondary-foreground: 0 0% 100%;
-
-    --muted: 229 228 255;
-    --muted-foreground: 26 24 44;
-
-    --accent: 155 135 245;
-    --accent-foreground: 0 0% 100%;
-
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 155 135 245;
+    --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
   }
@@ -40,8 +34,27 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
   }
+}
+
+.gradient-header {
+  background: linear-gradient(to right, #2C3E50, #E74C3C);
+}
+
+.hero-section {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+              url('/african-pattern.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.service-card {
+  @apply bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+}
+
+.nav-link {
+  @apply text-white hover:text-yellow-300 transition-colors duration-300;
 }
