@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 
 const Contact = () => {
   return (
@@ -97,17 +98,29 @@ const Contact = () => {
             </Card>
 
             <div className="flex justify-center space-x-6">
-              <a href="https://www.facebook.com/profile.php?id=100085548302186" className="text-[#E74C3C] hover:text-[#c0392b] text-2xl">
-                <i className="fab fa-facebook"></i>
+              <a 
+                href="https://www.facebook.com/profile.php?id=100085548302186" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#E74C3C] hover:text-[#c0392b] transition-colors"
+              >
+                <Facebook size={32} />
               </a>
-              <a href="https://www.tiktok.com/@bobohhousemedia" className="text-[#E74C3C] hover:text-[#c0392b] text-2xl">
-                <i className="fab fa-tiktok"></i>
+              <a 
+                href="https://www.instagram.com/bobohhousemedia" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#E74C3C] hover:text-[#c0392b] transition-colors"
+              >
+                <Instagram size={32} />
               </a>
-              <a href="https://www.instagram.com/bobohhousemedia" className="text-[#E74C3C] hover:text-[#c0392b] text-2xl">
-                <i className="fab fa-instagram"></i>
-              </a>
-              <a href="https://www.youtube.com/@BobohhouseMedia" className="text-[#E74C3C] hover:text-[#c0392b] text-2xl">
-                <i className="fab fa-youtube"></i>
+              <a 
+                href="https://www.youtube.com/@BobohhouseMedia" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#E74C3C] hover:text-[#c0392b] transition-colors"
+              >
+                <Youtube size={32} />
               </a>
             </div>
           </div>
