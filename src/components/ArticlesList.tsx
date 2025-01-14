@@ -1,19 +1,33 @@
-import { Article, ArticleCategory } from "@/types/article";
-import { ArticleCard } from "./ArticleCard";
+import { useQuery } from '@tanstack/react-query';
+import { Article, ArticleCategory } from '@/types/article';
+import { ArticleCard } from './ArticleCard';
+import { getArticles } from '@/services/supabase';
 
 interface ArticlesListProps {
-  articles: Article[];
   category?: ArticleCategory;
 }
 
-export const ArticlesList = ({ articles, category }: ArticlesListProps) => {
-  const filteredArticles = category
-    ? articles.filter((article) => article.category === category)
-    : articles;
+export const ArticlesList = ({ category }: ArticlesListProps) => {
+  const { data: articles, isLoading, error } = useQuery({
+    queryKey: ['articles', category],
+    queryFn: () => getArticles(category),
+  });
+
+  if (isLoading) {
+    return <div className="text-center">Chargement des articles...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">Erreur lors du chargement des articles.</div>;
+  }
+
+  if (!articles || articles.length === 0) {
+    return <div className="text-center">Aucun article trouvé.</div>;
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredArticles.map((article) => (
+      {articles.map((article) => (
         <ArticleCard key={article.id} article={article} />
       ))}
     </div>
