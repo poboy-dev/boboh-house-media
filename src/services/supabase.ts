@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { Article } from '@/types/article';
 
-const supabaseUrl = 'VOTRE_URL_SUPABASE';
-const supabaseKey = 'VOTRE_CLE_PUBLIQUE_SUPABASE';
+const supabaseUrl = 'https://votre-projet.supabase.co';  // ⚠️ Remplacez par votre URL Supabase
+const supabaseKey = 'votre-clé-publique';  // ⚠️ Remplacez par votre clé publique Supabase
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
