@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Portfolio from "./pages/Portfolio";
 import BobohGeek from "./pages/BobohGeek";
 import BHAssociation from "./pages/BHAssociation";
+import { ArticleDetail } from "./components/ArticleDetail";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/bobohgeek" element={<BobohGeek />} />
               <Route path="/bh-association" element={<BHAssociation />} />
+              <Route path="/articles/:id" element={<ArticleDetail />} />
             </Routes>
           </main>
           <Footer />
