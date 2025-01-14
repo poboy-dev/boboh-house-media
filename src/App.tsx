@@ -9,6 +9,9 @@ import Index from "./pages/Index";
 import Services from "./pages/Services";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Portfolio from "./pages/Portfolio";
+import BobohGeek from "./pages/BobohGeek";
+import BHAssociation from "./pages/BHAssociation";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,9 @@ const App = () => (
               <Route path="/services" element={<Services />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/bobohgeek" element={<BobohGeek />} />
+              <Route path="/bh-association" element={<BHAssociation />} />
             </Routes>
           </main>
           <Footer />
