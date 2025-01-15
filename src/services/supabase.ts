@@ -27,6 +27,32 @@ export const getArticles = async (category?: string) => {
   return data as Article[];
 };
 
+// Test function to verify table access
+export const testTableAccess = async () => {
+  console.log('Testing table access...');
+  
+  // Test articles table
+  const { data: articles, error: articlesError } = await supabase
+    .from('articles')
+    .select('*')
+    .limit(1);
+    
+  console.log('Articles table test:', { data: articles, error: articlesError });
+  
+  // Test profiles table
+  const { data: profiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('*')
+    .limit(1);
+    
+  console.log('Profiles table test:', { data: profiles, error: profilesError });
+  
+  return {
+    articles: { data: articles, error: articlesError },
+    profiles: { data: profiles, error: profilesError }
+  };
+};
+
 export const getArticleById = async (id: string) => {
   console.log('Fetching article by ID:', id);
   const { data, error } = await supabase

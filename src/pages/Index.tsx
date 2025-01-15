@@ -1,7 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { testTableAccess } from "@/services/supabase";
 
 const Index = () => {
+  useEffect(() => {
+    // Test table access when component mounts
+    testTableAccess().then((result) => {
+      console.log('Table access test results:', result);
+    }).catch((error) => {
+      console.error('Error testing table access:', error);
+    });
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
