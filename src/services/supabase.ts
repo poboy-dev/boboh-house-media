@@ -4,10 +4,12 @@ import { Article } from '@/types/article';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log('Initializing Supabase client with:', { supabaseUrl });
+
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const getArticles = async (category?: string) => {
-  console.log('Fetching articles from Supabase...');
+  console.log('Fetching articles from Supabase...', { category });
   let query = supabase.from('articles').select('*');
   
   if (category) {
@@ -21,6 +23,7 @@ export const getArticles = async (category?: string) => {
     throw error;
   }
   
+  console.log('Articles fetched successfully:', data);
   return data as Article[];
 };
 
@@ -37,5 +40,6 @@ export const getArticleById = async (id: string) => {
     throw error;
   }
   
+  console.log('Article fetched successfully:', data);
   return data as Article;
 };
