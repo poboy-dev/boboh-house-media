@@ -1,10 +1,26 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
+import { toast } from "sonner";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const session = useSession();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Déconnexion réussie");
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Erreur lors de la déconnexion");
+    }
+  };
 
   return (
     <nav className="fixed w-full gradient-header z-50">
@@ -30,6 +46,23 @@ export const Navbar = () => {
               <Link to="/contact" className="nav-link">Contact</Link>
               <Link to="/bobogeek" className="nav-link">Boboh Geek</Link>
               <Link to="/associations" className="nav-link">BH Associations</Link>
+              {session ? (
+                <Button 
+                  variant="secondary"
+                  onClick={handleLogout}
+                  className="text-white hover:text-primary-foreground"
+                >
+                  Déconnexion
+                </Button>
+              ) : (
+                <Button 
+                  variant="secondary"
+                  onClick={() => navigate("/auth")}
+                  className="text-white hover:text-primary-foreground"
+                >
+                  Connexion
+                </Button>
+              )}
             </div>
           </div>
 
@@ -55,6 +88,23 @@ export const Navbar = () => {
             <Link to="/contact" className="nav-link block px-3 py-2">Contact</Link>
             <Link to="/bobogeek" className="nav-link block px-3 py-2">Boboh Geek</Link>
             <Link to="/associations" className="nav-link block px-3 py-2">BH Associations</Link>
+            {session ? (
+              <Button 
+                variant="secondary"
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2"
+              >
+                Déconnexion
+              </Button>
+            ) : (
+              <Button 
+                variant="secondary"
+                onClick={() => navigate("/auth")}
+                className="w-full text-left px-3 py-2"
+              >
+                Connexion
+              </Button>
+            )}
           </div>
         </div>
       )}
