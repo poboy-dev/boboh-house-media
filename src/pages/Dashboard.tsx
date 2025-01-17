@@ -15,6 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArticleStats } from "@/components/ArticleStats";
+import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const Dashboard = () => {
   const session = useSession();
@@ -69,73 +71,80 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Tableau de bord</h1>
-        <Button onClick={() => navigate("/new-article")} className="flex items-center gap-2">
-          <Plus size={16} />
-          Nouvel article
-        </Button>
-      </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <DashboardSidebar />
+        <main className="flex-1 p-6">
+          <div className="container mx-auto space-y-8">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold">Tableau de bord</h1>
+              <Button onClick={() => navigate("/new-article")} className="flex items-center gap-2">
+                <Plus size={16} />
+                Nouvel article
+              </Button>
+            </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Gestion des articles</h2>
-          {isLoading ? (
-            <div className="text-center">Chargement des articles...</div>
-          ) : !articles?.length ? (
-            <div className="text-center">Aucun article trouvé.</div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Titre</TableHead>
-                  <TableHead>Catégorie</TableHead>
-                  <TableHead>Date de création</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {articles.map((article) => (
-                  <TableRow key={article.id}>
-                    <TableCell className="font-medium">{article.title}</TableCell>
-                    <TableCell>{article.category}</TableCell>
-                    <TableCell>
-                      {new Date(article.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/edit-article/${article.id}`)}
-                        className="inline-flex items-center gap-2"
-                      >
-                        <Edit size={16} />
-                        Modifier
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteArticleMutation.mutate(article.id)}
-                        className="inline-flex items-center gap-2"
-                      >
-                        <Trash2 size={16} />
-                        Supprimer
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </div>
+            <div className="grid gap-8 md:grid-cols-2">
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">Gestion des articles</h2>
+                {isLoading ? (
+                  <div className="text-center">Chargement des articles...</div>
+                ) : !articles?.length ? (
+                  <div className="text-center">Aucun article trouvé.</div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Titre</TableHead>
+                        <TableHead>Catégorie</TableHead>
+                        <TableHead>Date de création</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {articles.map((article) => (
+                        <TableRow key={article.id}>
+                          <TableCell className="font-medium">{article.title}</TableCell>
+                          <TableCell>{article.category}</TableCell>
+                          <TableCell>
+                            {new Date(article.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/edit-article/${article.id}`)}
+                              className="inline-flex items-center gap-2"
+                            >
+                              <Edit size={16} />
+                              Modifier
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => deleteArticleMutation.mutate(article.id)}
+                              className="inline-flex items-center gap-2"
+                            >
+                              <Trash2 size={16} />
+                              Supprimer
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
 
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Statistiques</h2>
-          <ArticleStats />
-        </div>
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">Statistiques</h2>
+                <ArticleStats />
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
