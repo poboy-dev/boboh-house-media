@@ -58,10 +58,18 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
 
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      if (!session?.user?.id) throw new Error("User not authenticated");
+      if (!session?.user?.id) {
+        toast.error("Vous devez être connecté pour créer un article");
+        throw new Error("User not authenticated");
+      }
 
       const articleData = {
-        ...values,
+        title: values.title,
+        description: values.description,
+        content: values.content,
+        category: values.category,
+        image: values.image,
+        date: values.date,
         author: session.user.id,
       };
 
@@ -74,18 +82,9 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
           .eq("id", initialData.id);
         if (error) throw error;
       } else {
-        // Ensure all required fields are present and properly typed
         const { error } = await supabase
           .from("articles")
-          .insert({
-            title: articleData.title,
-            description: articleData.description,
-            content: articleData.content,
-            category: articleData.category,
-            image: articleData.image,
-            date: articleData.date,
-            author: articleData.author,
-          });
+          .insert([articleData]); // Note: insert expects an array
         if (error) throw error;
       }
     },
