@@ -9,4 +9,6 @@ export interface Article {
   image: string;
   date: string;
   author: string;
+  created_at: string;
+  updated_at: string;
 }
