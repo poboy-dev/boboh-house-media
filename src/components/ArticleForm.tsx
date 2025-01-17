@@ -65,6 +65,8 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
         author: session.user.id,
       };
 
+      console.log("Saving article with data:", articleData);
+
       if (initialData) {
         const { error } = await supabase
           .from("articles")
@@ -72,7 +74,9 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
           .eq("id", initialData.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("articles").insert([articleData]);
+        const { error } = await supabase
+          .from("articles")
+          .insert(articleData);
         if (error) throw error;
       }
     },
