@@ -74,9 +74,18 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
           .eq("id", initialData.id);
         if (error) throw error;
       } else {
+        // Ensure all required fields are present and properly typed
         const { error } = await supabase
           .from("articles")
-          .insert(articleData);
+          .insert({
+            title: articleData.title,
+            description: articleData.description,
+            content: articleData.content,
+            category: articleData.category,
+            image: articleData.image,
+            date: articleData.date,
+            author: articleData.author,
+          });
         if (error) throw error;
       }
     },
