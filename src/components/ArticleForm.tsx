@@ -1,12 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { ArticleCategory } from "@/types/article";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -15,6 +10,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -22,56 +19,85 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
+import { toast } from "sonner";
+import { Article } from "@/types/article";
 
-interface ArticleFormData {
-  title: string;
-  description: string;
-  content: string;
-  category: ArticleCategory;
-  date: string;
+const formSchema = z.object({
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().min(1, "La description est requise"),
+  content: z.string().min(1, "Le contenu est requis"),
+  category: z.enum(["portfolio", "bobohgeek", "bh-association"]),
+  image: z.string().min(1, "L'URL de l'image est requise"),
+  date: z.string().min(1, "La date est requise"),
+});
+
+interface ArticleFormProps {
+  initialData?: Article;
 }
 
-export const ArticleForm = () => {
+export const ArticleForm = ({ initialData }: ArticleFormProps) => {
+  const session = useSession();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
-  const form = useForm<ArticleFormData>({
-    defaultValues: {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData || {
       title: "",
       description: "",
       content: "",
       category: "portfolio",
+      image: "",
       date: new Date().toISOString().split("T")[0],
     },
   });
 
-  const onSubmit = async (data: ArticleFormData) => {
-    try {
-      setIsSubmitting(true);
-      console.log("Submitting article:", data);
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      if (!session?.user?.id) throw new Error("User not authenticated");
 
-      const { error } = await supabase.from("articles").insert([
-        {
-          ...data,
-          author: (await supabase.auth.getUser()).data.user?.id,
-        },
-      ]);
+      const articleData = {
+        ...values,
+        author: session.user.id,
+      };
 
-      if (error) throw error;
-
-      toast.success("Article créé avec succès");
+      if (initialData) {
+        const { error } = await supabase
+          .from("articles")
+          .update(articleData)
+          .eq("id", initialData.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("articles").insert([articleData]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userArticles"] });
+      toast.success(
+        initialData
+          ? "Article modifié avec succès"
+          : "Article créé avec succès"
+      );
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Error creating article:", error);
-      toast.error("Erreur lors de la création de l'article");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    },
+    onError: (error) => {
+      console.error("Error saving article:", error);
+      toast.error("Erreur lors de la sauvegarde de l'article");
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    mutation.mutate(values);
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="title"
@@ -112,7 +138,7 @@ export const ArticleForm = () => {
               <FormControl>
                 <Textarea
                   placeholder="Contenu de l'article"
-                  className="min-h-[200px]"
+                  className="min-h-[300px]"
                   {...field}
                 />
               </FormControl>
@@ -138,7 +164,7 @@ export const ArticleForm = () => {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="portfolio">Portfolio</SelectItem>
-                  <SelectItem value="bobohgeek">Boboh Geek</SelectItem>
+                  <SelectItem value="bobohgeek">BobOh Geek</SelectItem>
                   <SelectItem value="bh-association">BH Association</SelectItem>
                 </SelectContent>
               </Select>
@@ -149,10 +175,24 @@ export const ArticleForm = () => {
 
         <FormField
           control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image URL</FormLabel>
+              <FormControl>
+                <Input placeholder="URL de l'image" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date de publication</FormLabel>
+              <FormLabel>Date</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -161,18 +201,9 @@ export const ArticleForm = () => {
           )}
         />
 
-        <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate("/dashboard")}
-          >
-            Annuler
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Création..." : "Créer l'article"}
-          </Button>
-        </div>
+        <Button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? "Enregistrement..." : "Enregistrer"}
+        </Button>
       </form>
     </Form>
   );

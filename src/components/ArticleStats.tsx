@@ -42,7 +42,11 @@ export const ArticleStats = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[300px]">
-        <ChartContainer>
+        <ChartContainer config={{
+          value: {
+            color: "hsl(var(--primary))",
+          },
+        }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={articlesByCategory}>
               <XAxis dataKey="name" />
