@@ -16,6 +16,7 @@ import BobohGeek from "./pages/BobohGeek";
 import BHAssociation from "./pages/BHAssociation";
 import { ArticleDetail } from "./components/ArticleDetail";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/bh-association" element={<BHAssociation />} />
                 <Route path="/articles/:id" element={<ArticleDetail />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>

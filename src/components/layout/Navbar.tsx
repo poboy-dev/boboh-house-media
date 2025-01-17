@@ -44,8 +44,11 @@ export const Navbar = () => {
               <Link to="/portfolio" className="nav-link">Portfolio</Link>
               <Link to="/about" className="nav-link">À Propos</Link>
               <Link to="/contact" className="nav-link">Contact</Link>
-              <Link to="/bobogeek" className="nav-link">Boboh Geek</Link>
-              <Link to="/associations" className="nav-link">BH Associations</Link>
+              <Link to="/bobohgeek" className="nav-link">Boboh Geek</Link>
+              <Link to="/bh-association" className="nav-link">BH Associations</Link>
+              {session && (
+                <Link to="/dashboard" className="nav-link">Dashboard</Link>
+              )}
               {session ? (
                 <Button 
                   variant="secondary"
@@ -86,8 +89,11 @@ export const Navbar = () => {
             <Link to="/portfolio" className="nav-link block px-3 py-2">Portfolio</Link>
             <Link to="/about" className="nav-link block px-3 py-2">À Propos</Link>
             <Link to="/contact" className="nav-link block px-3 py-2">Contact</Link>
-            <Link to="/bobogeek" className="nav-link block px-3 py-2">Boboh Geek</Link>
-            <Link to="/associations" className="nav-link block px-3 py-2">BH Associations</Link>
+            <Link to="/bobohgeek" className="nav-link block px-3 py-2">Boboh Geek</Link>
+            <Link to="/bh-association" className="nav-link block px-3 py-2">BH Associations</Link>
+            {session && (
+              <Link to="/dashboard" className="nav-link block px-3 py-2">Dashboard</Link>
+            )}
             {session ? (
               <Button 
                 variant="secondary"
