@@ -1,77 +1,78 @@
-import { useNavigate } from "react-router-dom";
-import { Home, FilePlus, Tag, LogOut } from "lucide-react";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { UserRound } from "lucide-react";
 
-export function DashboardSidebar() {
-  const navigate = useNavigate();
+export const DashboardSidebar = () => {
+  const session = useSession();
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success("Déconnexion réussie");
-      navigate("/");
-    } catch (error) {
-      console.error("Error logging out:", error);
-      toast.error("Erreur lors de la déconnexion");
-    }
-  };
+  const { data: profile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => {
+      console.log("Fetching user profile...");
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session?.user?.id)
+        .single();
 
-  const items = [
-    {
-      title: "Accueil",
-      icon: Home,
-      onClick: () => navigate("/"),
+      if (error) {
+        console.error("Error fetching profile:", error);
+        throw error;
+      }
+      console.log("Profile fetched:", data);
+      return data;
     },
-    {
-      title: "Créer un article",
-      icon: FilePlus,
-      onClick: () => navigate("/new-article"),
-    },
-    {
-      title: "Créer une catégorie",
-      icon: Tag,
-      onClick: () => navigate("/categories/new"),
-    },
-    {
-      title: "Déconnexion",
-      icon: LogOut,
-      onClick: handleLogout,
-    },
-  ];
+    enabled: !!session?.user?.id,
+  });
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    onClick={item.onClick}
-                    className="w-full flex items-center gap-2"
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <aside className="w-64 bg-secondary min-h-screen p-4">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-xl font-bold">Dashboard</h2>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="rounded-full hover:opacity-80 transition-opacity">
+              <Avatar>
+                <AvatarImage src={session?.user?.user_metadata?.avatar_url} />
+                <AvatarFallback>
+                  <UserRound className="h-6 w-6" />
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80" align="end">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-4">
+                <Avatar>
+                  <AvatarImage src={session?.user?.user_metadata?.avatar_url} />
+                  <AvatarFallback>
+                    <UserRound className="h-6 w-6" />
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="text-sm font-semibold">
+                    {session?.user?.email}
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Role: {profile?.role || "User"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </aside>
   );
-}
+};
