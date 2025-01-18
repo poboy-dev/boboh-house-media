@@ -14,7 +14,7 @@ const Auth = () => {
     // Check if user is already logged in
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
-        navigate("/");
+        navigate("/dashboard");
       }
       if (event === "USER_UPDATED") {
         const checkSession = async () => {
