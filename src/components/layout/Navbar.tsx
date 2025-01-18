@@ -31,7 +31,7 @@ export const Navbar = () => {
               <img 
                 src="/BObohhouse media.webp" 
                 alt="BobohHouse Media Logo" 
-                className="h-10 w-10 rounded-full mr-3"
+                className="h-12 w-12 rounded-full mr-3"
               />
               <span className="text-white text-xl font-bold">Boboh House Media</span>
             </Link>
