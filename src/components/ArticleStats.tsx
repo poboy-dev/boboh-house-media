@@ -52,7 +52,7 @@ export const ArticleStats = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip content={({ active, payload }) => {
-                if (!active || !payload) return null;
+                if (!active || !payload || !payload.length) return null;
                 return (
                   <div className="rounded-lg border bg-background p-2 shadow-sm">
                     <div className="grid grid-cols-2 gap-2">
@@ -61,7 +61,7 @@ export const ArticleStats = () => {
                           Catégorie
                         </span>
                         <span className="font-bold text-muted-foreground">
-                          {payload[0].payload.name}
+                          {payload[0]?.payload?.name || "N/A"}
                         </span>
                       </div>
                       <div className="flex flex-col">
@@ -69,7 +69,7 @@ export const ArticleStats = () => {
                           Articles
                         </span>
                         <span className="font-bold">
-                          {payload[0].value}
+                          {payload[0]?.value || 0}
                         </span>
                       </div>
                     </div>
