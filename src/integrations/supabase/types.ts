@@ -21,6 +21,7 @@ export type Database = {
           image: string | null
           title: string
           updated_at: string
+          views: number | null
         }
         Insert: {
           author?: string | null
@@ -33,6 +34,7 @@ export type Database = {
           image?: string | null
           title: string
           updated_at?: string
+          views?: number | null
         }
         Update: {
           author?: string | null
@@ -45,6 +47,7 @@ export type Database = {
           image?: string | null
           title?: string
           updated_at?: string
+          views?: number | null
         }
         Relationships: []
       }
@@ -74,7 +77,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_article_views: {
+        Args: {
+          article_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role: "admin" | "author" | "user"
