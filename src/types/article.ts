@@ -11,4 +11,5 @@ export interface Article {
   author: string;
   created_at: string;
   updated_at: string;
+  views: number | null;
 }
