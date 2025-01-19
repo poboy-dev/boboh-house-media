@@ -3,9 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Article } from "@/types/article";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit } from "lucide-react";
+import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +21,7 @@ export const ArticlesTable = () => {
   const session = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ["userArticles"],
@@ -59,6 +62,10 @@ export const ArticlesTable = () => {
     },
   });
 
+  const filteredArticles = articles?.filter((article) =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -69,9 +76,19 @@ export const ArticlesTable = () => {
         </Button>
       </div>
 
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        <Input
+          placeholder="Rechercher un article..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+
       {isLoading ? (
         <div className="text-center">Chargement des articles...</div>
-      ) : !articles?.length ? (
+      ) : !filteredArticles?.length ? (
         <div className="text-center">Aucun article trouvé.</div>
       ) : (
         <Table>
@@ -85,7 +102,7 @@ export const ArticlesTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {articles.map((article) => (
+            {filteredArticles.map((article) => (
               <TableRow key={article.id}>
                 <TableCell className="font-medium">{article.title}</TableCell>
                 <TableCell>{article.category}</TableCell>
@@ -100,7 +117,7 @@ export const ArticlesTable = () => {
                     onClick={() => navigate(`/edit-article/${article.id}`)}
                     className="inline-flex items-center gap-2"
                   >
-                    <Edit size={16} />
+                    <Pencil size={16} />
                     Modifier
                   </Button>
                   <Button

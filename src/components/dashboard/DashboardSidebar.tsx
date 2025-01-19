@@ -1,8 +1,8 @@
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Home, LayoutDashboard, FileText, Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Home, LayoutDashboard, FileText } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -13,11 +13,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 export const DashboardSidebar = () => {
   const session = useSession();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: profile } = useQuery({
     queryKey: ["userProfile"],
@@ -43,17 +43,17 @@ export const DashboardSidebar = () => {
     {
       title: "Accueil",
       icon: Home,
-      onClick: () => navigate("/"),
+      path: "/",
     },
     {
       title: "Tableau de bord",
       icon: LayoutDashboard,
-      onClick: () => navigate("/dashboard"),
+      path: "/dashboard",
     },
     {
       title: "Articles",
       icon: FileText,
-      onClick: () => navigate("/dashboard/articles"),
+      path: "/dashboard/articles",
     },
   ];
 
@@ -67,8 +67,9 @@ export const DashboardSidebar = () => {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                    onClick={item.onClick}
+                    onClick={() => navigate(item.path)}
                     className="flex items-center gap-2"
+                    isActive={location.pathname === item.path}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
