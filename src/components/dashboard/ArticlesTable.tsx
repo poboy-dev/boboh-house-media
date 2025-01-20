@@ -24,7 +24,7 @@ export const ArticlesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: articles, isLoading, error } = useQuery({
-    queryKey: ["userArticles"],
+    queryKey: ["userArticles", session?.user?.id],
     queryFn: async () => {
       console.log("Fetching user articles with session:", session?.user?.id);
       if (!session?.user?.id) {
@@ -52,6 +52,8 @@ export const ArticlesTable = () => {
       }
     },
     enabled: !!session?.user?.id,
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const deleteArticleMutation = useMutation({
