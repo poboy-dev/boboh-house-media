@@ -7,8 +7,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -22,7 +22,7 @@ export const DashboardSidebar = () => {
   const { data: profile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
-      console.log("Fetching user profile...");
+      console.log("Fetching user profile with ID:", session?.user?.id);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -33,7 +33,7 @@ export const DashboardSidebar = () => {
         console.error("Error fetching profile:", error);
         throw error;
       }
-      console.log("Profile fetched:", data);
+      console.log("Profile data retrieved:", data);
       return data;
     },
     enabled: !!session?.user?.id,
