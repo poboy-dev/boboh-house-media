@@ -1,38 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 import { Article } from "@/types/article";
-
-const formSchema = z.object({
-  title: z.string().min(1, "Le titre est requis"),
-  description: z.string().min(1, "La description est requise"),
-  content: z.string().min(1, "Le contenu est requis"),
-  category: z.enum(["portfolio", "bobohgeek", "bh-association"]),
-  image: z.string().min(1, "L'URL de l'image est requise"),
-  date: z.string().min(1, "La date est requise"),
-});
+import { ArticleFormTitle } from "./forms/article/ArticleFormTitle";
+import { ArticleFormDescription } from "./forms/article/ArticleFormDescription";
+import { ArticleFormContent } from "./forms/article/ArticleFormContent";
+import { ArticleFormCategory } from "./forms/article/ArticleFormCategory";
+import { articleFormSchema, ArticleFormSchema } from "./forms/article/schema";
 
 interface ArticleFormProps {
   initialData?: Article;
@@ -43,8 +23,8 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
   const session = useSession();
   const queryClient = useQueryClient();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ArticleFormSchema>({
+    resolver: zodResolver(articleFormSchema),
     defaultValues: initialData || {
       title: "",
       description: "",
@@ -56,19 +36,14 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
   });
 
   const mutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
+    mutationFn: async (values: ArticleFormSchema) => {
       if (!session?.user?.id) {
         toast.error("Vous devez être connecté pour créer un article");
         throw new Error("User not authenticated");
       }
 
       const articleData = {
-        title: values.title,
-        description: values.description,
-        content: values.content,
-        category: values.category,
-        image: values.image,
-        date: values.date,
+        ...values,
         author: session.user.id,
       };
 
@@ -104,115 +79,41 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = (values: ArticleFormSchema) => {
     mutation.mutate(values);
-  }
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Titre</FormLabel>
-              <FormControl>
-                <Input placeholder="Titre de l'article" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <ArticleFormTitle form={form} />
+        <ArticleFormDescription form={form} />
+        <ArticleFormContent form={form} />
+        <ArticleFormCategory form={form} />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Description courte de l'article"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+              Image URL
+            </label>
+            <Input
+              id="image"
+              {...form.register("image")}
+              placeholder="URL de l'image"
+            />
+          </div>
 
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contenu</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Contenu de l'article"
-                  className="min-h-[300px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Catégorie</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez une catégorie" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="portfolio">Portfolio</SelectItem>
-                  <SelectItem value="bobohgeek">BobOh Geek</SelectItem>
-                  <SelectItem value="bh-association">BH Association</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="URL de l'image" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <div>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+              Date
+            </label>
+            <Input
+              id="date"
+              type="date"
+              {...form.register("date")}
+            />
+          </div>
+        </div>
 
         <Button type="submit" disabled={mutation.isPending}>
           {mutation.isPending ? "Enregistrement..." : "Enregistrer"}
