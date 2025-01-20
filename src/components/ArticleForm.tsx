@@ -58,7 +58,7 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
       } else {
         const { error } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert(articleData); // Removed the array wrapper
         if (error) throw error;
       }
     },
