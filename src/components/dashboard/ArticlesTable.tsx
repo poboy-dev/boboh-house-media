@@ -23,24 +23,35 @@ export const ArticlesTable = () => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: articles, isLoading } = useQuery({
+  const { data: articles, isLoading, error } = useQuery({
     queryKey: ["userArticles"],
     queryFn: async () => {
-      console.log("Fetching user articles...");
-      const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("author", session?.user?.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching articles:", error);
-        throw error;
+      console.log("Fetching user articles with session:", session?.user?.id);
+      if (!session?.user?.id) {
+        console.error("No user session found");
+        throw new Error("Authentication required");
       }
-      console.log("Articles fetched:", data);
-      return data as Article[];
+
+      try {
+        const { data, error } = await supabase
+          .from("articles")
+          .select("*")
+          .eq("author", session.user.id)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Supabase error:", error);
+          throw error;
+        }
+
+        console.log("Articles fetched successfully:", data);
+        return data as Article[];
+      } catch (err) {
+        console.error("Error in queryFn:", err);
+        throw err;
+      }
     },
-    enabled: !!session?.user,
+    enabled: !!session?.user?.id,
   });
 
   const deleteArticleMutation = useMutation({
@@ -61,6 +72,27 @@ export const ArticlesTable = () => {
       toast.error("Erreur lors de la suppression de l'article");
     },
   });
+
+  if (!session) {
+    return (
+      <div className="text-center">
+        Veuillez vous connecter pour accéder à vos articles.
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return <div className="text-center">Chargement des articles...</div>;
+  }
+
+  if (error) {
+    console.error("Error in component:", error);
+    return (
+      <div className="text-center text-red-500">
+        Erreur lors du chargement des articles. Veuillez réessayer.
+      </div>
+    );
+  }
 
   const filteredArticles = articles?.filter((article) =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -86,9 +118,7 @@ export const ArticlesTable = () => {
         />
       </div>
 
-      {isLoading ? (
-        <div className="text-center">Chargement des articles...</div>
-      ) : !filteredArticles?.length ? (
+      {!filteredArticles?.length ? (
         <div className="text-center">Aucun article trouvé.</div>
       ) : (
         <Table>
