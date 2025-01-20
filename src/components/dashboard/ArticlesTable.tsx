@@ -16,12 +16,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ArticleForm } from "@/components/ArticleForm";
 
 export const ArticlesTable = () => {
   const session = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isNewArticleDialogOpen, setIsNewArticleDialogOpen] = useState(false);
 
   const { data: articles, isLoading, error } = useQuery({
     queryKey: ["userArticles", session?.user?.id],
@@ -100,15 +108,32 @@ export const ArticlesTable = () => {
     article.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleFormSuccess = () => {
+    setIsNewArticleDialogOpen(false);
+    queryClient.invalidateQueries({ queryKey: ["userArticles"] });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Articles</h2>
-        <Button onClick={() => navigate("/new-article")} className="flex items-center gap-2">
+        <Button 
+          onClick={() => setIsNewArticleDialogOpen(true)} 
+          className="flex items-center gap-2"
+        >
           <Plus size={16} />
           Nouvel article
         </Button>
       </div>
+
+      <Dialog open={isNewArticleDialogOpen} onOpenChange={setIsNewArticleDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Créer un nouvel article</DialogTitle>
+          </DialogHeader>
+          <ArticleForm onSuccess={handleFormSuccess} />
+        </DialogContent>
+      </Dialog>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />

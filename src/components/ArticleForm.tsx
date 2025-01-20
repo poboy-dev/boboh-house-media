@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 import { Article } from "@/types/article";
@@ -37,11 +36,11 @@ const formSchema = z.object({
 
 interface ArticleFormProps {
   initialData?: Article;
+  onSuccess?: () => void;
 }
 
-export const ArticleForm = ({ initialData }: ArticleFormProps) => {
+export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
   const session = useSession();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,7 +83,7 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
       } else {
         const { error } = await supabase
           .from("articles")
-          .insert([articleData]); // Note: insert expects an array
+          .insert([articleData]);
         if (error) throw error;
       }
     },
@@ -95,7 +94,9 @@ export const ArticleForm = ({ initialData }: ArticleFormProps) => {
           ? "Article modifié avec succès"
           : "Article créé avec succès"
       );
-      navigate("/dashboard");
+      if (onSuccess) {
+        onSuccess();
+      }
     },
     onError: (error) => {
       console.error("Error saving article:", error);
