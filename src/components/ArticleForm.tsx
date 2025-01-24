@@ -42,9 +42,16 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
         throw new Error("User not authenticated");
       }
 
+      // Ensure all required fields are present and properly typed
       const articleData = {
-        ...values,
+        title: values.title,
+        description: values.description,
+        content: values.content,
+        category: values.category,
+        image: values.image,
+        date: values.date,
         author: session.user.id,
+        views: initialData?.views || 0, // Include views field with default value
       };
 
       console.log("Saving article with data:", articleData);
