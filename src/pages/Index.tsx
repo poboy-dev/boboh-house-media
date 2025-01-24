@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { testTableAccess } from "@/services/supabase";
+import { Navbar } from "@/components/layout/Navbar";
 
 const Index = () => {
   useEffect(() => {
@@ -15,6 +16,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Navbar />
       {/* Hero Section */}
       <section className="hero-section min-h-screen flex items-center justify-center text-center text-white px-4">
         <div className="max-w-4xl mx-auto">
