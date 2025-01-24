@@ -14,6 +14,7 @@ import Contact from "@/pages/Contact";
 import BobohGeek from "@/pages/BobohGeek";
 import BHAssociation from "@/pages/BHAssociation";
 import Auth from "@/pages/Auth";
+import { ArticleDetail } from "@/components/ArticleDetail";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function App() {
                 </Route>
                 <Route path="/new-article" element={<NewArticle />} />
                 <Route path="/edit-article/:id" element={<EditArticle />} />
+                <Route path="/articles/:id" element={<ArticleDetail />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/portfolio" element={<Portfolio />} />
