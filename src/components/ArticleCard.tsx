@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Article } from "@/types/article";
 import { Link } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 interface ArticleCardProps {
   article: Article;
@@ -20,7 +21,13 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
         <CardHeader>
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">{article.date}</span>
-            <span className="text-sm text-muted-foreground">{article.author}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{article.author}</span>
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Eye size={16} />
+                <span>{article.views || 0}</span>
+              </div>
+            </div>
           </div>
           <CardTitle className="line-clamp-2">{article.title}</CardTitle>
           <CardDescription className="line-clamp-3">
