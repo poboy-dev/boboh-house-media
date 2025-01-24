@@ -6,6 +6,7 @@ import UserManagement from "@/pages/UserManagement";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
+import { Footer } from "@/components/layout/Footer";
 
 const queryClient = new QueryClient();
 
@@ -13,14 +14,17 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route path="articles" element={<ArticlesTable />} />
-            <Route path="users" element={<UserManagement />} />
-          </Route>
-          <Route path="/auth" element={<Auth />} />
-        </Routes>
+        <div className="min-h-screen flex flex-col">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />}>
+              <Route path="articles" element={<ArticlesTable />} />
+              <Route path="users" element={<UserManagement />} />
+            </Route>
+            <Route path="/auth" element={<Auth />} />
+          </Routes>
+          <Footer />
+        </div>
       </BrowserRouter>
       <Toaster />
     </QueryClientProvider>

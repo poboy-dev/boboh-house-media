@@ -1,8 +1,8 @@
 export const Footer = () => {
   return (
-    <footer className="bg-black text-white py-4 text-center">
+    <footer className="bg-black text-white py-4 text-center mt-auto">
       <div className="max-w-7xl mx-auto px-4">
-        <p>&copy; {new Date().getFullYear()} Boboh House Media. Tous droits réservés.</p>
+        &copy; {new Date().getFullYear()} Boboh House Media. All rights reserved.
       </div>
     </footer>
   );
