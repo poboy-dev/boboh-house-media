@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
+type UserRole = "user" | "author" | "admin";
+
 export const UserManagement = () => {
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["users"],
@@ -30,7 +32,7 @@ export const UserManagement = () => {
     },
   });
 
-  const handleRoleChange = async (userId: string, newRole: string) => {
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
       const { error } = await supabase
         .from("profiles")
@@ -76,7 +78,7 @@ export const UserManagement = () => {
               <TableCell>
                 <Select
                   defaultValue={user.role}
-                  onValueChange={(value) => handleRoleChange(user.id, value)}
+                  onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}
                 >
                   <SelectTrigger className="w-32">
                     <SelectValue />

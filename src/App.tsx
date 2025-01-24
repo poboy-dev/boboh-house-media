@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import Dashboard from "@/pages/Dashboard";
 import UserManagement from "@/pages/UserManagement";
+import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
+import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 
 const queryClient = new QueryClient();
 
@@ -11,9 +14,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />}>
-            <Route path="articles" element={<Articles />} />
+            <Route path="articles" element={<ArticlesTable />} />
             <Route path="users" element={<UserManagement />} />
           </Route>
           <Route path="/auth" element={<Auth />} />
