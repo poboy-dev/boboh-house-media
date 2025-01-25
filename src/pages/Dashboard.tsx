@@ -4,7 +4,9 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { UserManagement } from "./UserManagement";
-import { useLocation } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
   const session = useSession();
@@ -12,12 +14,26 @@ const Dashboard = () => {
   const isArticlesRoute = location.pathname === "/dashboard/articles";
   const isUsersRoute = location.pathname === "/dashboard/users";
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      console.log("Current session:", currentSession);
+    };
+    
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state change in Dashboard:", event, session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   if (!session) {
-    return (
-      <div className="container mx-auto p-6 text-center">
-        <p>Veuillez vous connecter pour accéder au tableau de bord.</p>
-      </div>
-    );
+    console.log("No session found, redirecting to auth page");
+    return <Navigate to="/auth" replace />;
   }
 
   return (
