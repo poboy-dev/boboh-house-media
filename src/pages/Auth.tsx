@@ -26,6 +26,7 @@ const Auth = () => {
       if (error) {
         console.error("Session check error:", error);
         setErrorMessage(getErrorMessage(error));
+        toast.error(getErrorMessage(error));
       }
     };
     
@@ -87,11 +88,6 @@ const Auth = () => {
           }}
           theme="light"
           providers={[]}
-          onError={(error) => {
-            console.error("Auth error:", error);
-            setErrorMessage(getErrorMessage(error));
-            toast.error(getErrorMessage(error));
-          }}
         />
       </div>
     </div>
