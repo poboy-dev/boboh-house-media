@@ -6,7 +6,6 @@ import { Navbar } from "@/components/layout/Navbar";
 
 const Index = () => {
   useEffect(() => {
-    // Test table access when component mounts
     testTableAccess().then((result) => {
       console.log('Table access test results:', result);
     }).catch((error) => {
@@ -88,99 +87,115 @@ const Index = () => {
       </section>
 
       {/* Team Section */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-16">Notre Équipe</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {/* CEO */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/remy ceo.jpeg" 
-                  alt="Rémy Meva'a"
-                  className="w-full h-full object-cover"
-                />
+          <div className="relative">
+            <div className="flex overflow-x-auto space-x-6 pb-8 snap-x snap-mandatory scrollbar-hide">
+              {/* CEO */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/remy ceo.jpeg" 
+                      alt="Rémy Meva'a"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Rémy Meva'a</h3>
+                  <p className="text-gray-600">CEO</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Rémy Meva'a</h3>
-              <p className="text-gray-600">CEO</p>
-            </div>
 
-            {/* DG */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/Dany Dg.jpeg" 
-                  alt="Danielle ETONDE"
-                  className="w-full h-full object-cover"
-                />
+              {/* DG */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:200ms]">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/Dany Dg.jpeg" 
+                      alt="Danielle ETONDE"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Danielle ETONDE</h3>
+                  <p className="text-gray-600">Directrice Générale</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Danielle ETONDE</h3>
-              <p className="text-gray-600">Directrice Générale</p>
-            </div>
 
-            {/* SG */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/jarida SG.jpeg" 
-                  alt="NGOUTANE Jarida"
-                  className="w-full h-full object-cover"
-                />
+              {/* SG */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:400ms]">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/jarida SG.jpeg" 
+                      alt="NGOUTANE Jarida"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">NGOUTANE Jarida</h3>
+                  <p className="text-gray-600">SECRETAIRE GENERALE</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">NGOUTANE Jarida</h3>
-              <p className="text-gray-600">SECRETAIRE GENERALE</p>
-            </div>
 
-            {/* Redactrice */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/marie redactrice.jpeg" 
-                  alt="KELAH Marie"
-                  className="w-full h-full object-cover"
-                />
+              {/* Redactrice */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:600ms]">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/marie redactrice.jpeg" 
+                      alt="KELAH Marie"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">KELAH Marie</h3>
+                  <p className="text-gray-600">REDACTRICE</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">KELAH Marie</h3>
-              <p className="text-gray-600">REDACTRICE</p>
-            </div>
 
-            {/* Communicatrice 1 */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/michel counicatrice.jpeg" 
-                  alt="DEUMANI Michelle"
-                  className="w-full h-full object-cover"
-                />
+              {/* Communicatrice 1 */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:800ms]">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/michel counicatrice.jpeg" 
+                      alt="DEUMANI Michelle"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">DEUMANI Michelle</h3>
+                  <p className="text-gray-600">COMMUNICATRICE</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">DEUMANI Michelle</h3>
-              <p className="text-gray-600">COMMUNICATRICE</p>
-            </div>
 
-            {/* Communicatrice 2 */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/aicha comunication.jpeg" 
-                  alt="AICHATOU DJOUMAI"
-                  className="w-full h-full object-cover"
-                />
+              {/* Communicatrice 2 */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:1000ms]">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/aicha comunication.jpeg" 
+                      alt="AICHATOU DJOUMAI"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">AICHATOU DJOUMAI</h3>
+                  <p className="text-gray-600">COMMUNICATRICE</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">AICHATOU DJOUMAI</h3>
-              <p className="text-gray-600">COMMUNICATRICE</p>
-            </div>
 
-            {/* Communicateur */}
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                <img 
-                  src="/image/Yan comuniction.jpeg" 
-                  alt="YAN YOLI YOLI"
-                  className="w-full h-full object-cover"
-                />
+              {/* Communicateur */}
+              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:1200ms]">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                    <img 
+                      src="/image/Yan comuniction.jpeg" 
+                      alt="YAN YOLI YOLI"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">YAN YOLI YOLI</h3>
+                  <p className="text-gray-600">COMMUNICATEUR</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">YAN YOLI YOLI</h3>
-              <p className="text-gray-600">COMMUNICATEUR</p>
             </div>
           </div>
         </div>
