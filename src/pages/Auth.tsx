@@ -1,18 +1,18 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const hasToastShown = useRef(false);
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
     let isSubscribed = true;
-    let redirectTimeout: NodeJS.Timeout;
-    let toastTimeout: NodeJS.Timeout;
 
     // Check if user is already logged in
     const checkCurrentSession = async () => {
@@ -20,24 +20,24 @@ const Auth = () => {
         const { data: { session }, error } = await supabase.auth.getSession();
         console.log("Current session on Auth page:", session);
         
-        if (session && isSubscribed) {
+        if (session && isSubscribed && !hasRedirected.current) {
           console.log("User already logged in, redirecting to dashboard");
-          // Debounce redirect and toast
-          clearTimeout(redirectTimeout);
-          clearTimeout(toastTimeout);
+          hasRedirected.current = true;
           
-          toastTimeout = setTimeout(() => {
+          if (!hasToastShown.current) {
+            hasToastShown.current = true;
             toast.success("Vous êtes déjà connecté");
-          }, 100);
+          }
           
-          redirectTimeout = setTimeout(() => {
-            navigate("/dashboard");
-          }, 200);
+          navigate("/dashboard");
         }
         
         if (error) {
           console.error("Session check error:", error);
-          toast.error("Erreur de session: " + error.message);
+          if (!hasToastShown.current) {
+            hasToastShown.current = true;
+            toast.error("Erreur de session: " + error.message);
+          }
         }
       } finally {
         if (isSubscribed) {
@@ -53,37 +53,40 @@ const Auth = () => {
       
       if (!isSubscribed) return;
 
-      if (event === "SIGNED_IN" && session) {
+      if (event === "SIGNED_IN" && session && !hasRedirected.current) {
         console.log("Sign in successful, redirecting to dashboard");
-        // Debounce redirect and toast
-        clearTimeout(redirectTimeout);
-        clearTimeout(toastTimeout);
+        hasRedirected.current = true;
         
-        toastTimeout = setTimeout(() => {
+        if (!hasToastShown.current) {
+          hasToastShown.current = true;
           toast.success("Connexion réussie");
-        }, 100);
+        }
         
-        redirectTimeout = setTimeout(() => {
-          navigate("/dashboard");
-        }, 200);
+        navigate("/dashboard");
       }
       
       if (event === "TOKEN_REFRESHED" && !session) {
         console.log("Token refresh failed - clearing session");
         await supabase.auth.signOut();
-        toast.error("Session expirée. Veuillez vous reconnecter.");
+        if (!hasToastShown.current) {
+          hasToastShown.current = true;
+          toast.error("Session expirée. Veuillez vous reconnecter.");
+        }
       }
 
       if (event === "SIGNED_OUT") {
         console.log("User signed out");
-        toast.info("Déconnexion réussie");
+        hasRedirected.current = false;
+        hasToastShown.current = false;
+        if (!hasToastShown.current) {
+          hasToastShown.current = true;
+          toast.info("Déconnexion réussie");
+        }
       }
     });
 
     return () => {
       isSubscribed = false;
-      clearTimeout(redirectTimeout);
-      clearTimeout(toastTimeout);
       subscription.unsubscribe();
     };
   }, [navigate]);
@@ -100,7 +103,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg animate-fade-in">
         <h2 className="text-2xl font-bold text-center">Welcome to BobohHouse Media</h2>
         <SupabaseAuth 
           supabaseClient={supabase}
