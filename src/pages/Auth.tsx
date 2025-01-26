@@ -1,29 +1,48 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isSubscribed = true;
+    let redirectTimeout: NodeJS.Timeout;
+    let toastTimeout: NodeJS.Timeout;
+
     // Check if user is already logged in
     const checkCurrentSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      console.log("Current session on Auth page:", session);
-      
-      if (session) {
-        console.log("User already logged in, redirecting to dashboard");
-        toast.success("Vous êtes déjà connecté");
-        navigate("/dashboard");
-      }
-      
-      if (error) {
-        console.error("Session check error:", error);
-        toast.error("Erreur de session: " + error.message);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        console.log("Current session on Auth page:", session);
+        
+        if (session && isSubscribed) {
+          console.log("User already logged in, redirecting to dashboard");
+          // Debounce redirect and toast
+          clearTimeout(redirectTimeout);
+          clearTimeout(toastTimeout);
+          
+          toastTimeout = setTimeout(() => {
+            toast.success("Vous êtes déjà connecté");
+          }, 100);
+          
+          redirectTimeout = setTimeout(() => {
+            navigate("/dashboard");
+          }, 200);
+        }
+        
+        if (error) {
+          console.error("Session check error:", error);
+          toast.error("Erreur de session: " + error.message);
+        }
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       }
     };
     
@@ -32,10 +51,21 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state change:", event, session);
       
+      if (!isSubscribed) return;
+
       if (event === "SIGNED_IN" && session) {
         console.log("Sign in successful, redirecting to dashboard");
-        toast.success("Connexion réussie");
-        navigate("/dashboard");
+        // Debounce redirect and toast
+        clearTimeout(redirectTimeout);
+        clearTimeout(toastTimeout);
+        
+        toastTimeout = setTimeout(() => {
+          toast.success("Connexion réussie");
+        }, 100);
+        
+        redirectTimeout = setTimeout(() => {
+          navigate("/dashboard");
+        }, 200);
       }
       
       if (event === "TOKEN_REFRESHED" && !session) {
@@ -51,9 +81,22 @@ const Auth = () => {
     });
 
     return () => {
+      isSubscribed = false;
+      clearTimeout(redirectTimeout);
+      clearTimeout(toastTimeout);
       subscription.unsubscribe();
     };
   }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
