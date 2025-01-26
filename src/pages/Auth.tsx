@@ -40,7 +40,7 @@ const Auth = () => {
         toast.success("Connexion réussie!");
         navigate("/dashboard");
       }
-      
+
       if (event === "SIGNED_OUT") {
         console.log("User signed out");
       }
@@ -82,9 +82,17 @@ const Auth = () => {
           }}
           theme="light"
           providers={[]}
-          onError={(error) => {
-            console.error("Auth error:", error);
-            toast.error(error.message);
+          localization={{
+            variables: {
+              sign_in: {
+                email_label: 'Email',
+                password_label: 'Mot de passe',
+                email_input_placeholder: 'Votre email',
+                password_input_placeholder: 'Votre mot de passe',
+                button_label: 'Se connecter',
+                loading_button_label: 'Connexion en cours ...',
+              }
+            }
           }}
         />
       </div>
