@@ -1,15 +1,12 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const hasToastShown = useRef(false);
-  const hasRedirected = useRef(false);
 
   useEffect(() => {
     let isSubscribed = true;
@@ -17,27 +14,12 @@ const Auth = () => {
     // Check if user is already logged in
     const checkCurrentSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         console.log("Current session on Auth page:", session);
         
-        if (session && isSubscribed && !hasRedirected.current) {
+        if (session && isSubscribed) {
           console.log("User already logged in, redirecting to dashboard");
-          hasRedirected.current = true;
-          
-          if (!hasToastShown.current) {
-            hasToastShown.current = true;
-            toast.success("Vous êtes déjà connecté");
-          }
-          
           navigate("/dashboard");
-        }
-        
-        if (error) {
-          console.error("Session check error:", error);
-          if (!hasToastShown.current) {
-            hasToastShown.current = true;
-            toast.error("Erreur de session: " + error.message);
-          }
         }
       } finally {
         if (isSubscribed) {
@@ -53,35 +35,14 @@ const Auth = () => {
       
       if (!isSubscribed) return;
 
-      if (event === "SIGNED_IN" && session && !hasRedirected.current) {
+      if (event === "SIGNED_IN" && session) {
         console.log("Sign in successful, redirecting to dashboard");
-        hasRedirected.current = true;
-        
-        if (!hasToastShown.current) {
-          hasToastShown.current = true;
-          toast.success("Connexion réussie");
-        }
-        
         navigate("/dashboard");
       }
       
       if (event === "TOKEN_REFRESHED" && !session) {
         console.log("Token refresh failed - clearing session");
         await supabase.auth.signOut();
-        if (!hasToastShown.current) {
-          hasToastShown.current = true;
-          toast.error("Session expirée. Veuillez vous reconnecter.");
-        }
-      }
-
-      if (event === "SIGNED_OUT") {
-        console.log("User signed out");
-        hasRedirected.current = false;
-        hasToastShown.current = false;
-        if (!hasToastShown.current) {
-          hasToastShown.current = true;
-          toast.info("Déconnexion réussie");
-        }
       }
     });
 
@@ -103,7 +64,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg animate-fade-in">
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center">Welcome to BobohHouse Media</h2>
         <SupabaseAuth 
           supabaseClient={supabase}
