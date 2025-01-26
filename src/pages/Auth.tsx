@@ -3,6 +3,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -11,7 +12,6 @@ const Auth = () => {
   useEffect(() => {
     let isSubscribed = true;
 
-    // Check if user is already logged in
     const checkCurrentSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -37,12 +37,16 @@ const Auth = () => {
 
       if (event === "SIGNED_IN" && session) {
         console.log("Sign in successful, redirecting to dashboard");
+        toast.success("Connexion réussie!");
         navigate("/dashboard");
       }
       
-      if (event === "TOKEN_REFRESHED" && !session) {
-        console.log("Token refresh failed - clearing session");
-        await supabase.auth.signOut();
+      if (event === "SIGNED_OUT") {
+        console.log("User signed out");
+      }
+
+      if (event === "USER_UPDATED") {
+        console.log("User profile updated");
       }
     });
 
@@ -63,7 +67,7 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-background animate-fade-in">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center">Welcome to BobohHouse Media</h2>
         <SupabaseAuth 
@@ -73,10 +77,15 @@ const Auth = () => {
             style: {
               button: { background: 'rgb(var(--primary))', color: 'white' },
               anchor: { color: 'rgb(var(--primary))' },
+              message: { color: 'rgb(var(--destructive))' }
             }
           }}
           theme="light"
           providers={[]}
+          onError={(error) => {
+            console.error("Auth error:", error);
+            toast.error(error.message);
+          }}
         />
       </div>
     </div>
