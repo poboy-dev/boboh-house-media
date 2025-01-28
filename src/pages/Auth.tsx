@@ -10,48 +10,33 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isSubscribed = true;
-
-    const checkCurrentSession = async () => {
+    const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        console.log("Current session on Auth page:", session);
-        
-        if (session && isSubscribed) {
+        if (session) {
           console.log("User already logged in, redirecting to dashboard");
           navigate("/dashboard");
         }
+      } catch (error) {
+        console.error("Error checking session:", error);
       } finally {
-        if (isSubscribed) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
-    
-    checkCurrentSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event, session);
-      
-      if (!isSubscribed) return;
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state change:", event);
 
       if (event === "SIGNED_IN" && session) {
-        console.log("Sign in successful, redirecting to dashboard");
+        console.log("Sign in successful");
         toast.success("Connexion réussie!");
         navigate("/dashboard");
-      }
-
-      if (event === "SIGNED_OUT") {
-        console.log("User signed out");
-      }
-
-      if (event === "USER_UPDATED") {
-        console.log("User profile updated");
       }
     });
 
     return () => {
-      isSubscribed = false;
       subscription.unsubscribe();
     };
   }, [navigate]);
@@ -67,17 +52,17 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center">Welcome to BobohHouse Media</h2>
+        <h2 className="text-2xl font-bold text-center text-foreground">Welcome to BobohHouse Media</h2>
         <SupabaseAuth 
           supabaseClient={supabase}
           appearance={{ 
             theme: ThemeSupa,
             style: {
-              button: { background: 'rgb(var(--primary))', color: 'white' },
-              anchor: { color: 'rgb(var(--primary))' },
-              message: { color: 'rgb(var(--destructive))' }
+              button: { background: 'hsl(var(--primary))', color: 'white' },
+              anchor: { color: 'hsl(var(--primary))' },
+              message: { color: 'hsl(var(--destructive))' }
             }
           }}
           theme="light"
