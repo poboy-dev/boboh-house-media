@@ -28,7 +28,7 @@ const Services = () => {
     },
     {
       title: "Formation en Art Oratoire",
-      description: "Des stratégies de contenu optimisées pour maximiser votre présence en ligne.",
+      description: "Développez vos compétences en communication orale et gagnez en confiance.",
       features: ["Ateliers", "Coaching Individuel", "Cours en ligne", "Club de Debats", "Networking"],
       image: "https://cibul.s3.amazonaws.com/4b2cd3ba9a534145922e3f8e4bd5e392.base.image.jpg"
     },
@@ -41,34 +41,34 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-24 bg-gray-50">
+    <div className="min-h-screen pt-24 bg-background">
       <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Nos Services</h1>
-        <p className="text-lg text-gray-600">Découvrez notre gamme complète de services de production audiovisuelle professionnelle</p>
+        <h1 className="text-4xl font-bold text-foreground mb-4">Nos Services</h1>
+        <p className="text-lg text-muted-foreground">Découvrez notre gamme complète de services de production audiovisuelle professionnelle</p>
       </div>
 
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service, index) => (
-          <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
             <div className="h-48 overflow-hidden">
               <img
                 src={service.image}
                 alt={service.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
-              <p className="text-gray-600 mb-4">{service.description}</p>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">{service.title}</h3>
+              <p className="text-muted-foreground mb-4">{service.description}</p>
               <ul className="space-y-2 mb-6">
                 {service.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center text-gray-600">
-                    <span className="text-green-500 mr-2">✓</span>
+                  <li key={idx} className="flex items-center text-muted-foreground">
+                    <span className="text-primary mr-2">✓</span>
                     {feature}
                   </li>
                 ))}
               </ul>
-              <button className="w-full bg-[#E74C3C] text-white py-2 px-4 rounded hover:bg-[#c0392b] transition-colors">
+              <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded hover:bg-primary/90 transition-colors">
                 Demander un devis
               </button>
             </div>
