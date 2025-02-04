@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasCheckedSession, setHasCheckedSession] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -18,7 +18,6 @@ const Auth = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session && mounted) {
           console.log("User already logged in, redirecting to dashboard");
-          setIsAuthenticated(true);
           navigate("/dashboard");
         }
       } catch (error) {
@@ -26,6 +25,7 @@ const Auth = () => {
       } finally {
         if (mounted) {
           setIsLoading(false);
+          setHasCheckedSession(true);
         }
       }
     };
@@ -39,11 +39,8 @@ const Auth = () => {
 
       if (event === "SIGNED_IN" && session) {
         console.log("Sign in successful");
-        if (!isAuthenticated) {
-          setIsAuthenticated(true);
-          toast.success("Connexion réussie!");
-          navigate("/dashboard");
-        }
+        toast.success("Connexion réussie!");
+        navigate("/dashboard");
       }
     });
 
@@ -51,9 +48,9 @@ const Auth = () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, isAuthenticated]);
+  }, [navigate]);
 
-  if (isLoading) {
+  if (isLoading || !hasCheckedSession) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -65,24 +62,50 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg animate-fade-in">
-        <h2 className="text-2xl font-bold text-center text-foreground">Welcome to BobohHouse Media</h2>
+        <h2 className="text-2xl font-bold text-center text-foreground mb-8">
+          Bienvenue sur BobohHouse Media
+        </h2>
         <SupabaseAuth 
           supabaseClient={supabase}
           appearance={{ 
             theme: ThemeSupa,
             style: {
-              button: { background: 'hsl(var(--primary))', color: 'white' },
-              anchor: { color: 'hsl(var(--primary))' },
-              message: { color: 'hsl(var(--destructive))' },
-              container: { color: 'hsl(var(--foreground))' }
+              button: { 
+                background: 'hsl(var(--primary))', 
+                color: 'white',
+                borderRadius: '0.375rem',
+                padding: '0.75rem 1rem',
+              },
+              anchor: { 
+                color: 'hsl(var(--primary))',
+                textDecoration: 'underline', 
+              },
+              message: { 
+                color: 'hsl(var(--destructive))',
+                marginBottom: '1rem',
+              },
+              container: { 
+                color: 'hsl(var(--foreground))',
+              },
+              input: {
+                borderColor: 'hsl(var(--border))',
+                borderRadius: '0.375rem',
+                padding: '0.75rem 1rem',
+              },
+              label: {
+                color: 'hsl(var(--foreground))',
+                marginBottom: '0.5rem',
+              }
             },
             variables: {
               default: {
                 colors: {
                   brand: 'hsl(var(--primary))',
                   brandAccent: 'hsl(var(--primary))',
+                  inputBackground: 'hsl(var(--background))',
+                  inputText: 'hsl(var(--foreground))',
                 }
               }
             }
