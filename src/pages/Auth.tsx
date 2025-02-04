@@ -3,7 +3,6 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -39,7 +38,6 @@ const Auth = () => {
 
       if (event === "SIGNED_IN" && session) {
         console.log("Sign in successful");
-        toast.success("Connexion réussie!");
         navigate("/dashboard");
       }
     });
