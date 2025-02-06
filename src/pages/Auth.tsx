@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
+import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -18,6 +19,23 @@ const Auth = () => {
     }
   }, [session, navigate]);
 
+  // Set up auth state change listener
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
+      if (event === "SIGNED_IN" && session) {
+        toast.success("Connexion réussie");
+        navigate("/dashboard");
+      } else if (event === "SIGNED_OUT") {
+        toast.info("Déconnexion réussie");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -31,7 +49,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg animate-fade-in">
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center text-foreground mb-8">
           Bienvenue sur BobohHouse Media
         </h2>
@@ -66,21 +84,8 @@ const Auth = () => {
                 color: 'hsl(var(--foreground))',
                 marginBottom: '0.5rem',
               }
-            },
-            variables: {
-              default: {
-                colors: {
-                  brand: 'hsl(var(--primary))',
-                  brandAccent: 'hsl(var(--primary))',
-                  inputBackground: 'hsl(var(--background))',
-                  inputText: 'hsl(var(--foreground))',
-                }
-              }
             }
           }}
-          theme="light"
-          providers={[]}
-          redirectTo={window.location.origin}
           localization={{
             variables: {
               sign_in: {
@@ -101,6 +106,8 @@ const Auth = () => {
               }
             }
           }}
+          providers={[]}
+          redirectTo={window.location.origin}
         />
       </div>
     </div>
