@@ -12,6 +12,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // If session exists, navigate to dashboard
     if (session) {
       navigate("/dashboard");
     } else {
@@ -19,15 +20,15 @@ const Auth = () => {
     }
   }, [session, navigate]);
 
-  // Set up auth state change listener
+  // Single auth state change listener
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
+      
       if (event === "SIGNED_IN" && session) {
-        toast.success("Connexion réussie");
+        // Wait a brief moment to ensure session is properly set
+        await new Promise(resolve => setTimeout(resolve, 100));
         navigate("/dashboard");
-      } else if (event === "SIGNED_OUT") {
-        toast.info("Déconnexion réussie");
       }
     });
 
