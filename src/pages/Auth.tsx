@@ -12,22 +12,24 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // If session exists, navigate to dashboard
     if (session) {
+      console.log("Session exists, navigating to dashboard");
       navigate("/dashboard");
     } else {
+      console.log("No session found, showing auth form");
       setIsLoading(false);
     }
   }, [session, navigate]);
 
-  // Single auth state change listener
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
       if (event === "SIGNED_IN" && session) {
-        // Wait a brief moment to ensure session is properly set
-        await new Promise(resolve => setTimeout(resolve, 100));
+        console.log("User signed in, waiting for session to be set...");
+        // Wait for session to be properly set
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log("Navigating to dashboard after sign in");
         navigate("/dashboard");
       }
     });
