@@ -10,40 +10,29 @@ const Auth = () => {
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session && mounted) {
-          console.log("User already logged in, redirecting to dashboard");
+        if (session) {
           navigate("/dashboard");
         }
       } catch (error) {
         console.error("Error checking session:", error);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-          setHasCheckedSession(true);
-        }
+        setIsLoading(false);
+        setHasCheckedSession(true);
       }
     };
 
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      
-      console.log("Auth state change:", event);
-
       if (event === "SIGNED_IN" && session) {
-        console.log("Sign in successful");
         navigate("/dashboard");
       }
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate]);
