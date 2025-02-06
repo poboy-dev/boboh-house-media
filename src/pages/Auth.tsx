@@ -3,41 +3,22 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const session = useSession();
   const [isLoading, setIsLoading] = useState(true);
-  const [hasCheckedSession, setHasCheckedSession] = useState(false);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          navigate("/dashboard");
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-      } finally {
-        setIsLoading(false);
-        setHasCheckedSession(true);
-      }
-    };
+    if (session) {
+      navigate("/dashboard");
+    } else {
+      setIsLoading(false);
+    }
+  }, [session, navigate]);
 
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        navigate("/dashboard");
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  if (isLoading || !hasCheckedSession) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
