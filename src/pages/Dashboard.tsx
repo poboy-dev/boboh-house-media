@@ -31,6 +31,7 @@ const Dashboard = () => {
         } else if (currentSession) {
           setHasValidSession(true);
         } else {
+          console.log("No session found in Dashboard, redirecting to auth");
           setHasValidSession(false);
         }
       } catch (error) {

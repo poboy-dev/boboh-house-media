@@ -14,12 +14,18 @@ const Auth = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      if (currentSession) {
-        console.log("Session exists in Auth, navigating to dashboard");
-        navigate("/dashboard");
-      } else {
-        console.log("No session found in Auth, showing auth form");
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (currentSession) {
+          console.log("Session exists in Auth, navigating to dashboard");
+          navigate("/dashboard");
+        } else {
+          console.log("No session found in Auth, showing auth form");
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        toast.error("Une erreur est survenue lors de la vérification de la session");
         setIsLoading(false);
       }
     };
@@ -38,6 +44,7 @@ const Auth = () => {
         if (currentSession) {
           console.log("Session confirmed, navigating to dashboard");
           navigate("/dashboard");
+          toast.success("Connexion réussie");
         }
       }
     });
