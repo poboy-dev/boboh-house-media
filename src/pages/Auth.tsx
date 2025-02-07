@@ -1,3 +1,4 @@
+
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,25 +13,32 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (session) {
-      console.log("Session exists, navigating to dashboard");
-      navigate("/dashboard");
-    } else {
-      console.log("No session found, showing auth form");
-      setIsLoading(false);
-    }
-  }, [session, navigate]);
+    const checkSession = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (currentSession) {
+        console.log("Session exists in Auth, navigating to dashboard");
+        navigate("/dashboard");
+      } else {
+        console.log("No session found in Auth, showing auth form");
+        setIsLoading(false);
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
+      console.log("Auth state changed in Auth component:", event, session);
       
       if (event === "SIGNED_IN" && session) {
-        console.log("User signed in, waiting for session to be set...");
-        // Wait for session to be properly set
-        await new Promise(resolve => setTimeout(resolve, 500));
-        console.log("Navigating to dashboard after sign in");
-        navigate("/dashboard");
+        console.log("User signed in, ensuring session is set before navigation");
+        // Make sure we have the session
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (currentSession) {
+          console.log("Session confirmed, navigating to dashboard");
+          navigate("/dashboard");
+        }
       }
     });
 
