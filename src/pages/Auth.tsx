@@ -2,21 +2,31 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
   const session = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  const supabaseClient = useSupabaseClient();
 
   useEffect(() => {
-    if (session) {
-      console.log("Session exists in Auth, navigating to dashboard");
-      navigate("/dashboard", { replace: true });
-    }
-  }, [session, navigate]);
+    const checkSession = async () => {
+      const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
+      console.log("Current session in Auth:", currentSession);
+      
+      if (currentSession) {
+        console.log("Session exists in Auth, navigating to dashboard");
+        navigate("/dashboard", { replace: true });
+      }
+      setIsLoading(false);
+    };
+    
+    checkSession();
+  }, [supabaseClient, navigate]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -24,8 +34,11 @@ const Auth = () => {
       
       if (event === 'SIGNED_IN' && session) {
         console.log("User signed in, ensuring session is set before navigation");
-        navigate("/dashboard", { replace: true });
-        toast.success("Connexion réussie");
+        // Add a small delay to ensure session is properly set
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+          toast.success("Connexion réussie");
+        }, 500);
       } else if (event === 'SIGNED_OUT') {
         navigate("/auth", { replace: true });
       }
@@ -35,6 +48,18 @@ const Auth = () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (session) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

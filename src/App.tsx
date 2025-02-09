@@ -15,7 +15,8 @@ import BHAssociation from "@/pages/BHAssociation";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { Footer } from "@/components/layout/Footer";
 import { ArticleDetail } from "@/components/ArticleDetail";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,26 @@ const queryClient = new QueryClient({
 // Protected Route wrapper component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  const supabase = useSupabaseClient();
+  
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      console.log("Current session in ProtectedRoute:", currentSession);
+      setIsLoading(false);
+    };
+    
+    checkSession();
+  }, [supabase]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
   
   if (!session) {
     console.log("No session in ProtectedRoute, redirecting to auth");
