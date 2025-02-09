@@ -22,11 +22,11 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed in Auth component:", event, session);
       
-      if (event === "SIGNED_IN" && session) {
+      if (event === 'SIGNED_IN' && session) {
         console.log("User signed in, ensuring session is set before navigation");
         navigate("/dashboard");
         toast.success("Connexion réussie");
-      } else if (event === "USER_DELETED" || event === "SIGNED_OUT") {
+      } else if (event === 'SIGNED_OUT') {
         navigate("/auth");
       }
     });
