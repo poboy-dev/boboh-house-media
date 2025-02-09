@@ -14,19 +14,12 @@ const Auth = () => {
   const supabaseClient = useSupabaseClient();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
-      console.log("Current session in Auth:", currentSession);
-      
-      if (currentSession) {
-        console.log("Session exists in Auth, navigating to dashboard");
-        navigate("/dashboard", { replace: true });
-      }
-      setIsLoading(false);
-    };
-    
-    checkSession();
-  }, [supabaseClient, navigate]);
+    if (session) {
+      console.log("Session exists in Auth, navigating to dashboard");
+      navigate("/dashboard", { replace: true });
+    }
+    setIsLoading(false);
+  }, [session, navigate]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {

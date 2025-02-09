@@ -15,8 +15,9 @@ import BHAssociation from "@/pages/BHAssociation";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { Footer } from "@/components/layout/Footer";
 import { ArticleDetail } from "@/components/ArticleDetail";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient, SessionContextProvider } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,17 +32,17 @@ const queryClient = new QueryClient({
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = useSupabaseClient();
+  const supabaseClient = useSupabaseClient();
   
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
       console.log("Current session in ProtectedRoute:", currentSession);
       setIsLoading(false);
     };
     
     checkSession();
-  }, [supabase]);
+  }, [supabaseClient]);
 
   if (isLoading) {
     return (
@@ -63,34 +64,36 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route 
-              path="/dashboard/*" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="articles" element={<ArticlesTable />} />
-              <Route path="users" element={<UserManagement />} />
-            </Route>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/bobohgeek" element={<BobohGeek />} />
-            <Route path="/bh-association" element={<BHAssociation />} />
-            <Route path="/articles/:id" element={<ArticleDetail />} />
-          </Routes>
-          <Footer />
-        </div>
-      </BrowserRouter>
-      <Toaster />
+      <SessionContextProvider supabaseClient={supabase}>
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route 
+                path="/dashboard/*" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="articles" element={<ArticlesTable />} />
+                <Route path="users" element={<UserManagement />} />
+              </Route>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/bobohgeek" element={<BobohGeek />} />
+              <Route path="/bh-association" element={<BHAssociation />} />
+              <Route path="/articles/:id" element={<ArticleDetail />} />
+            </Routes>
+            <Footer />
+          </div>
+        </BrowserRouter>
+        <Toaster />
+      </SessionContextProvider>
     </QueryClientProvider>
   );
 }
