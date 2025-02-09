@@ -1,26 +1,61 @@
+
+import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { AboutContent, TimelineItem } from "@/types/about";
+import { useSession } from "@supabase/auth-helpers-react";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const About = () => {
-  const timeline = [
-    {
-      year: "2022",
-      title: "Création de Boboh House Media",
-      description: "Lancement de l'agence avec une équipe passionnée et créative."
-    },
-    {
-      year: "2023",
-      title: "Couverture evenements Otaku",
-      description: "Couverture du KOF 2023"
-    },
-    {
-      year: "2024",
-      title: "Innovation Digitale",
-      description: "Intégration des dernières technologies pour des expériences immersives."
+  const session = useSession();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { data: aboutContent, isLoading } = useQuery({
+    queryKey: ["aboutContent"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("about_content")
+        .select("*");
+      
+      if (error) {
+        console.error("Error fetching about content:", error);
+        throw error;
+      }
+      
+      return data as AboutContent[];
     }
-  ];
+  });
+
+  const timelineContent = aboutContent?.find(content => content.section === "timeline")?.content as TimelineItem[] || [];
+  const missionContent = aboutContent?.find(content => content.section === "mission")?.content.text || "";
+  const valuesContent = aboutContent?.find(content => content.section === "values")?.content.text || "";
+  const visionContent = aboutContent?.find(content => content.section === "vision")?.content.text || "";
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-24 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 bg-gray-50">
+      {session?.user && (
+        <div className="container mx-auto px-4 mb-8">
+          <Button 
+            onClick={() => setIsEditing(!isEditing)}
+            className="flex items-center gap-2"
+          >
+            <Pencil className="h-4 w-4" />
+            {isEditing ? "View Mode" : "Edit Mode"}
+          </Button>
+        </div>
+      )}
+
       <section className="bg-white py-16 text-center">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">Notre Histoire</h1>
@@ -38,7 +73,7 @@ const About = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2">Notre Mission</h3>
             <p className="text-gray-600">
-              Être le carrefour de la culture camerounaise, vendre nos artistes et nos événements aux yeux du monde.
+              {missionContent}
             </p>
           </Card>
 
@@ -48,7 +83,7 @@ const About = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2">Nos Valeurs</h3>
             <p className="text-gray-600">
-              Créativité, excellence et engagement culturel sont au cœur de notre approche.
+              {valuesContent}
             </p>
           </Card>
 
@@ -58,7 +93,7 @@ const About = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2">Notre Vision</h3>
             <p className="text-gray-600">
-              Devenir la référence sûre en terme d'information culturelle.
+              {visionContent}
             </p>
           </Card>
         </div>
@@ -68,7 +103,7 @@ const About = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Notre Parcours</h2>
           <div className="max-w-3xl mx-auto">
-            {timeline.map((item, index) => (
+            {timelineContent.map((item, index) => (
               <div key={index} className="flex mb-8">
                 <div className="w-24 flex-shrink-0">
                   <div className="text-[#E74C3C] font-bold">{item.year}</div>
