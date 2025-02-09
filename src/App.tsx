@@ -17,14 +17,20 @@ import { Footer } from "@/components/layout/Footer";
 import { ArticleDetail } from "@/components/ArticleDetail";
 import { useSession } from "@supabase/auth-helpers-react";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 // Protected Route wrapper component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
   
   if (!session) {
-    console.log("No session found, redirecting to auth");
     return <Navigate to="/auth" replace />;
   }
 

@@ -2,7 +2,7 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
@@ -10,42 +10,22 @@ import { toast } from "sonner";
 const Auth = () => {
   const navigate = useNavigate();
   const session = useSession();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        if (currentSession) {
-          console.log("Session exists in Auth, navigating to dashboard");
-          navigate("/dashboard");
-        } else {
-          console.log("No session found in Auth, showing auth form");
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-        toast.error("Une erreur est survenue lors de la vérification de la session");
-        setIsLoading(false);
-      }
-    };
-    
-    checkSession();
-  }, [navigate]);
+    if (session) {
+      console.log("Session exists in Auth, navigating to dashboard");
+      navigate("/dashboard");
+    }
+  }, [session, navigate]);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed in Auth component:", event, session);
       
       if (event === "SIGNED_IN" && session) {
         console.log("User signed in, ensuring session is set before navigation");
-        // Make sure we have the session
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        if (currentSession) {
-          console.log("Session confirmed, navigating to dashboard");
-          navigate("/dashboard");
-          toast.success("Connexion réussie");
-        }
+        navigate("/dashboard");
+        toast.success("Connexion réussie");
       }
     });
 
@@ -53,17 +33,6 @@ const Auth = () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Chargement...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
