@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,11 @@ export const AuthButton = () => {
     }
   };
 
+  const handleAuth = () => {
+    console.log("Navigating to auth page");
+    navigate("/auth");
+  };
+
   return session ? (
     <Popover>
       <PopoverTrigger asChild>
@@ -94,7 +100,7 @@ export const AuthButton = () => {
   ) : (
     <Button 
       variant="secondary"
-      onClick={() => navigate("/auth")}
+      onClick={handleAuth}
       className="text-white hover:text-primary-foreground"
     >
       Connexion

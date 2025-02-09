@@ -1,6 +1,6 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Dashboard from "@/pages/Dashboard";
 import UserManagement from "@/pages/UserManagement";
@@ -15,8 +15,21 @@ import BHAssociation from "@/pages/BHAssociation";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { Footer } from "@/components/layout/Footer";
 import { ArticleDetail } from "@/components/ArticleDetail";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const queryClient = new QueryClient();
+
+// Protected Route wrapper component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const session = useSession();
+  
+  if (!session) {
+    console.log("No session found, redirecting to auth");
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+};
 
 function App() {
   return (
@@ -25,7 +38,14 @@ function App() {
         <div className="min-h-screen flex flex-col">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />}>
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            >
               <Route path="articles" element={<ArticlesTable />} />
               <Route path="users" element={<UserManagement />} />
             </Route>
