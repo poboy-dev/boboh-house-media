@@ -14,7 +14,7 @@ const Auth = () => {
   useEffect(() => {
     if (session) {
       console.log("Session exists in Auth, navigating to dashboard");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
   }, [session, navigate]);
 
@@ -24,10 +24,10 @@ const Auth = () => {
       
       if (event === 'SIGNED_IN' && session) {
         console.log("User signed in, ensuring session is set before navigation");
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
         toast.success("Connexion réussie");
       } else if (event === 'SIGNED_OUT') {
-        navigate("/auth");
+        navigate("/auth", { replace: true });
       }
     });
 

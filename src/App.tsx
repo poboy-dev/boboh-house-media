@@ -31,9 +31,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
   
   if (!session) {
+    console.log("No session in ProtectedRoute, redirecting to auth");
     return <Navigate to="/auth" replace />;
   }
 
+  console.log("Session found in ProtectedRoute, rendering children");
   return <>{children}</>;
 };
 
@@ -45,7 +47,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route 
-              path="/dashboard" 
+              path="/dashboard/*" 
               element={
                 <ProtectedRoute>
                   <Dashboard />
