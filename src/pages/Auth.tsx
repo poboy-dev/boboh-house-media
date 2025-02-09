@@ -26,6 +26,8 @@ const Auth = () => {
         console.log("User signed in, ensuring session is set before navigation");
         navigate("/dashboard");
         toast.success("Connexion réussie");
+      } else if (event === "USER_DELETED" || event === "SIGNED_OUT") {
+        navigate("/auth");
       }
     });
 
