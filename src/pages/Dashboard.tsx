@@ -4,6 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
+import { ServicesManagement } from "@/components/dashboard/ServicesManagement";
 import { UserManagement } from "./UserManagement";
 import { useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [hasValidSession, setHasValidSession] = useState(false);
   const isArticlesRoute = location.pathname === "/dashboard/articles";
   const isUsersRoute = location.pathname === "/dashboard/users";
+  const isServicesRoute = location.pathname === "/dashboard/services";
 
   useEffect(() => {
     const checkSession = async () => {
@@ -87,6 +89,8 @@ const Dashboard = () => {
               <ArticlesTable />
             ) : isUsersRoute ? (
               <UserManagement />
+            ) : isServicesRoute ? (
+              <ServicesManagement />
             ) : (
               <DashboardStats />
             )}

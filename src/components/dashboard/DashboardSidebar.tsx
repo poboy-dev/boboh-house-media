@@ -1,7 +1,8 @@
+
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Home, LayoutDashboard, FileText, Users } from "lucide-react";
+import { Home, LayoutDashboard, FileText, Users, Settings } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -57,6 +58,11 @@ export const DashboardSidebar = () => {
       title: "Articles",
       icon: FileText,
       path: "/dashboard/articles",
+    },
+    {
+      title: "Services",
+      icon: Settings,
+      path: "/dashboard/services",
     },
     // Only show users management menu item for admins
     ...(isAdmin ? [{
