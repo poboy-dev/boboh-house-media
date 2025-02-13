@@ -10,13 +10,16 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   
-  // Hide navbar on any dashboard route
-  const isDashboard = location.pathname.includes("/dashboard");
+  // Hide navbar ONLY on dashboard routes
+  const isDashboard = location.pathname.startsWith("/dashboard");
 
+  // Early return if we're on a dashboard route
   if (isDashboard) {
+    console.log("On dashboard route, hiding navbar");
     return null;
   }
 
+  console.log("Not on dashboard route, showing navbar");
   return (
     <nav className="fixed w-full gradient-header z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
