@@ -79,6 +79,7 @@ function App() {
               >
                 <Route path="articles" element={<ArticlesTable />} />
                 <Route path="users" element={<UserManagement />} />
+                <Route path="about" element={<About />} />
               </Route>
               <Route path="/auth" element={<Auth />} />
               <Route path="/services" element={<Services />} />

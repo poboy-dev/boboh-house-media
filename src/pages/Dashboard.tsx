@@ -6,6 +6,7 @@ import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { ServicesManagement } from "@/components/dashboard/ServicesManagement";
 import { UserManagement } from "./UserManagement";
+import About from "./About";
 import { useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const isArticlesRoute = location.pathname === "/dashboard/articles";
   const isUsersRoute = location.pathname === "/dashboard/users";
   const isServicesRoute = location.pathname === "/dashboard/services";
+  const isAboutRoute = location.pathname === "/dashboard/about";
 
   useEffect(() => {
     const checkSession = async () => {
@@ -91,6 +93,8 @@ const Dashboard = () => {
               <UserManagement />
             ) : isServicesRoute ? (
               <ServicesManagement />
+            ) : isAboutRoute ? (
+              <About />
             ) : (
               <DashboardStats />
             )}
