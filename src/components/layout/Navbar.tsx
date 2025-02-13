@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
@@ -9,8 +10,12 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   
-  // Check if we're on the dashboard route
-  const isDashboard = location.pathname === "/dashboard";
+  // Hide navbar on any dashboard route
+  const isDashboard = location.pathname.includes("/dashboard");
+
+  if (isDashboard) {
+    return null;
+  }
 
   return (
     <nav className="fixed w-full gradient-header z-50">
@@ -23,7 +28,7 @@ export const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
-              {!isDashboard && <NavLinks />}
+              <NavLinks />
               <AuthButton />
             </div>
           </div>
@@ -44,7 +49,7 @@ export const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-secondary">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {!isDashboard && <NavLinks />}
+            <NavLinks />
             <AuthButton />
           </div>
         </div>
