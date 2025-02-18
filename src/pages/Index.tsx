@@ -1,8 +1,8 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { testTableAccess } from "@/services/supabase";
-import { Navbar } from "@/components/layout/Navbar";
 
 const Index = () => {
   useEffect(() => {
@@ -15,7 +15,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       {/* Hero Section */}
       <section className="hero-section min-h-screen flex items-center justify-center text-center text-white px-4">
         <div className="max-w-4xl mx-auto">
@@ -63,29 +62,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold mb-6">À Propos de BobohHouse Media</h2>
-            <p className="text-gray-600 mb-6">
-              Nous sommes une équipe passionnée de créatifs dédiés à la production de contenu audiovisuel de haute qualité. 
-              Notre objectif est de transformer vos idées en réalité visuelle impactante.
-            </p>
-            <Button asChild variant="secondary">
-              <Link to="/about">En savoir plus</Link>
-            </Button>
-          </div>
-          <div className="rounded-lg overflow-hidden shadow-xl">
-            <img 
-              src="/team-image.jpg" 
-              alt="Notre équipe" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-      </section>
-
       {/* Team Section */}
       <section className="py-24 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4">
@@ -97,7 +73,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/remy ceo.jpeg" 
+                      src="/remy_ceo.jpeg" 
                       alt="Rémy Meva'a"
                       className="w-full h-full object-cover"
                     />
@@ -112,7 +88,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/Dany Dg.jpeg" 
+                      src="/dany_dg.jpeg" 
                       alt="Danielle ETONDE"
                       className="w-full h-full object-cover"
                     />
@@ -127,7 +103,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/jarida SG.jpeg" 
+                      src="/jarida_sg.jpeg" 
                       alt="NGOUTANE Jarida"
                       className="w-full h-full object-cover"
                     />
@@ -142,7 +118,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/marie redactrice.jpeg" 
+                      src="/marie_redactrice.jpeg" 
                       alt="KELAH Marie"
                       className="w-full h-full object-cover"
                     />
@@ -157,7 +133,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/michel counicatrice.jpeg" 
+                      src="/michel_communicatrice.jpeg" 
                       alt="DEUMANI Michelle"
                       className="w-full h-full object-cover"
                     />
@@ -172,7 +148,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/aicha comunication.jpeg" 
+                      src="/aicha_communication.jpeg" 
                       alt="AICHATOU DJOUMAI"
                       className="w-full h-full object-cover"
                     />
@@ -187,7 +163,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/image/Yan comuniction.jpeg" 
+                      src="/yan_communication.jpeg" 
                       alt="YAN YOLI YOLI"
                       className="w-full h-full object-cover"
                     />
