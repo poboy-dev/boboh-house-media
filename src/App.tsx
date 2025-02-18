@@ -14,6 +14,7 @@ import BobohGeek from "@/pages/BobohGeek";
 import BHAssociation from "@/pages/BHAssociation";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
 import { ArticleDetail } from "@/components/ArticleDetail";
 import { useSession, useSupabaseClient, SessionContextProvider } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
@@ -67,6 +68,7 @@ function App() {
       <SessionContextProvider supabaseClient={supabase}>
         <BrowserRouter>
           <div className="min-h-screen flex flex-col">
+            <Navbar />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route 
