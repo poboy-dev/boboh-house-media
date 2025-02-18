@@ -73,7 +73,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/remy_ceo.jpeg" 
+                      src="/remy ceo.jpeg" 
                       alt="Rémy Meva'a"
                       className="w-full h-full object-cover"
                     />
@@ -88,7 +88,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/dany_dg.jpeg" 
+                      src="/Dany Dg.jpeg" 
                       alt="Danielle ETONDE"
                       className="w-full h-full object-cover"
                     />
@@ -103,7 +103,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/jarida_sg.jpeg" 
+                      src="/jarida SG.jpeg" 
                       alt="NGOUTANE Jarida"
                       className="w-full h-full object-cover"
                     />
@@ -118,7 +118,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/marie_redactrice.jpeg" 
+                      src="/marie redactrice.jpeg" 
                       alt="KELAH Marie"
                       className="w-full h-full object-cover"
                     />
@@ -133,7 +133,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/michel_communicatrice.jpeg" 
+                      src="/michel counicatrice.jpeg" 
                       alt="DEUMANI Michelle"
                       className="w-full h-full object-cover"
                     />
@@ -148,7 +148,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/aicha_communication.jpeg" 
+                      src="/aicha comunication.jpeg" 
                       alt="AICHATOU DJOUMAI"
                       className="w-full h-full object-cover"
                     />
@@ -163,7 +163,7 @@ const Index = () => {
                 <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                   <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
                     <img 
-                      src="/yan_communication.jpeg" 
+                      src="/Yan comuniction.jpeg" 
                       alt="YAN YOLI YOLI"
                       className="w-full h-full object-cover"
                     />
