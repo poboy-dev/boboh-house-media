@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,10 +46,12 @@
 }
 
 .hero-section {
-  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-              url('/african-pattern.jpg');
+  position: relative;
+  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                    url('/african-pattern.jpg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 .service-card {
@@ -57,4 +60,42 @@
 
 .nav-link {
   @apply text-white hover:text-yellow-300 transition-colors duration-300;
+}
+
+/* Add image loading styles */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Add debug outline to images that fail to load */
+img:not([src]), 
+img[src=""],
+img[src="#"] {
+  min-height: 100px;
+  background: #f0f0f0;
+  position: relative;
+}
+
+img:not([src])::after, 
+img[src=""]::after,
+img[src="#"]::after {
+  content: 'Image not found';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: #666;
+}
+
+/* Add smooth loading transition */
+.team-member-image {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.team-member-image.loaded {
+  opacity: 1;
 }
