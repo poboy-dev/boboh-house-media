@@ -5,6 +5,7 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { ServicesManagement } from "@/components/dashboard/ServicesManagement";
+import { TeamManagement } from "@/components/dashboard/TeamManagement";
 import { UserManagement } from "./UserManagement";
 import About from "./About";
 import { useLocation, Navigate } from "react-router-dom";
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const isArticlesRoute = location.pathname === "/dashboard/articles";
   const isUsersRoute = location.pathname === "/dashboard/users";
   const isServicesRoute = location.pathname === "/dashboard/services";
+  const isTeamRoute = location.pathname === "/dashboard/team";
   const isAboutRoute = location.pathname === "/dashboard/about";
 
   useEffect(() => {
@@ -93,6 +95,8 @@ const Dashboard = () => {
               <UserManagement />
             ) : isServicesRoute ? (
               <ServicesManagement />
+            ) : isTeamRoute ? (
+              <TeamManagement />
             ) : isAboutRoute ? (
               <About />
             ) : (

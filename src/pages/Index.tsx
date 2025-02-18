@@ -1,8 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { testTableAccess } from "@/services/supabase";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { TeamMember } from "@/types/team";
 
 const Index = () => {
   useEffect(() => {
@@ -12,6 +14,23 @@ const Index = () => {
       console.error('Error testing table access:', error);
     });
   }, []);
+
+  const { data: teamMembers, isLoading } = useQuery({
+    queryKey: ["team-members"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("team_members")
+        .select("*")
+        .order('order_index');
+      
+      if (error) {
+        console.error("Error fetching team members:", error);
+        throw error;
+      }
+      
+      return data as TeamMember[];
+    }
+  });
 
   return (
     <div className="min-h-screen">
@@ -68,110 +87,31 @@ const Index = () => {
           <h2 className="text-4xl font-bold text-center mb-16">Notre Équipe</h2>
           <div className="relative">
             <div className="flex overflow-x-auto space-x-6 pb-8 snap-x snap-mandatory scrollbar-hide">
-              {/* CEO */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/remy ceo.jpeg" 
-                      alt="Rémy Meva'a"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Rémy Meva'a</h3>
-                  <p className="text-gray-600">CEO</p>
+              {isLoading ? (
+                <div className="w-full flex justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-              </div>
-
-              {/* DG */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:200ms]">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/Dany Dg.jpeg" 
-                      alt="Danielle ETONDE"
-                      className="w-full h-full object-cover"
-                    />
+              ) : (
+                teamMembers?.map((member, index) => (
+                  <div 
+                    key={member.id} 
+                    className="flex-none w-72 snap-start animate-slide-in-right"
+                    style={{ animationDelay: `${index * 200}ms` }}
+                  >
+                    <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                      <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
+                        <img 
+                          src={member.image || "/placeholder.svg"}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
+                      <p className="text-gray-600">{member.role}</p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Danielle ETONDE</h3>
-                  <p className="text-gray-600">Directrice Générale</p>
-                </div>
-              </div>
-
-              {/* SG */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:400ms]">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/jarida SG.jpeg" 
-                      alt="NGOUTANE Jarida"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">NGOUTANE Jarida</h3>
-                  <p className="text-gray-600">SECRETAIRE GENERALE</p>
-                </div>
-              </div>
-
-              {/* Redactrice */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:600ms]">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/marie redactrice.jpeg" 
-                      alt="KELAH Marie"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">KELAH Marie</h3>
-                  <p className="text-gray-600">REDACTRICE</p>
-                </div>
-              </div>
-
-              {/* Communicatrice 1 */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:800ms]">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/michel counicatrice.jpeg" 
-                      alt="DEUMANI Michelle"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">DEUMANI Michelle</h3>
-                  <p className="text-gray-600">COMMUNICATRICE</p>
-                </div>
-              </div>
-
-              {/* Communicatrice 2 */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:1000ms]">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/aicha comunication.jpeg" 
-                      alt="AICHATOU DJOUMAI"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">AICHATOU DJOUMAI</h3>
-                  <p className="text-gray-600">COMMUNICATRICE</p>
-                </div>
-              </div>
-
-              {/* Communicateur */}
-              <div className="flex-none w-72 snap-start animate-slide-in-right [animation-delay:1200ms]">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                  <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                    <img 
-                      src="/Yan comuniction.jpeg" 
-                      alt="YAN YOLI YOLI"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">YAN YOLI YOLI</h3>
-                  <p className="text-gray-600">COMMUNICATEUR</p>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
         </div>

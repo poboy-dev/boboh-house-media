@@ -126,6 +126,36 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          created_at: string
+          id: string
+          image: string | null
+          name: string
+          order_index: number | null
+          role: Database["public"]["Enums"]["team_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image?: string | null
+          name: string
+          order_index?: number | null
+          role: Database["public"]["Enums"]["team_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image?: string | null
+          name?: string
+          order_index?: number | null
+          role?: Database["public"]["Enums"]["team_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -145,6 +175,13 @@ export type Database = {
       }
     }
     Enums: {
+      team_role:
+        | "CEO"
+        | "DG"
+        | "SG"
+        | "REDACTRICE"
+        | "COMMUNICATRICE"
+        | "COMMUNICATEUR"
       user_role: "admin" | "author" | "user"
     }
     CompositeTypes: {
