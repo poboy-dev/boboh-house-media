@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pencil, Save, Trash, Plus } from "lucide-react";
+import { Pencil, Save, Trash, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export const TeamManagement = () => {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TeamMember>>({});
+  const [uploading, setUploading] = useState(false);
 
   const { data: teamMembers, isLoading } = useQuery({
     queryKey: ["team-members"],
@@ -32,6 +33,41 @@ export const TeamManagement = () => {
       return data as TeamMember[];
     }
   });
+
+  const handleImageUpload = async (file: File, memberId: string) => {
+    try {
+      setUploading(true);
+      
+      // Create a unique file name
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${memberId}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload the file to Supabase storage
+      const { error: uploadError, data } = await supabase.storage
+        .from('team_images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('team_images')
+        .getPublicUrl(filePath);
+
+      // Update the form with the new image URL
+      setEditForm({ ...editForm, image: publicUrl });
+      
+      toast.success("Image téléchargée avec succès");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Erreur lors du téléchargement de l'image");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const updateMutation = useMutation({
     mutationFn: async (member: TeamMember) => {
@@ -61,6 +97,19 @@ export const TeamManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Get the member's current image URL
+      const member = teamMembers?.find(m => m.id === id);
+      if (member?.image) {
+        // Extract the file name from the URL
+        const fileName = member.image.split('/').pop();
+        if (fileName) {
+          // Delete the image from storage
+          await supabase.storage
+            .from('team_images')
+            .remove([fileName]);
+        }
+      }
+
       const { error } = await supabase
         .from("team_members")
         .delete()
@@ -157,12 +206,33 @@ export const TeamManagement = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="image">Image URL</Label>
-                  <Input
-                    id="image"
-                    value={editForm.image || member.image || ''}
-                    onChange={(e) => setEditForm({ ...editForm, image: e.target.value })}
-                  />
+                  <Label htmlFor="image">Image</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleImageUpload(file, member.id);
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                    {uploading && (
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    )}
+                  </div>
+                  {editForm.image && (
+                    <div className="mt-2">
+                      <img
+                        src={editForm.image}
+                        alt="Preview"
+                        className="w-20 h-20 object-cover rounded-full"
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div>
