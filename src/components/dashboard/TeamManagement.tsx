@@ -16,6 +16,7 @@ export const TeamManagement = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TeamMember>>({});
   const [uploading, setUploading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const { data: teamMembers, isLoading } = useQuery({
     queryKey: ["team-members"],
@@ -68,6 +69,35 @@ export const TeamManagement = () => {
       setUploading(false);
     }
   };
+
+  const createMutation = useMutation({
+    mutationFn: async (newMember: Partial<TeamMember>) => {
+      // Get the highest order_index
+      const maxOrder = teamMembers?.reduce((max, member) => 
+        Math.max(max, member.order_index || 0), 0) || 0;
+
+      const { error } = await supabase
+        .from("team_members")
+        .insert({
+          name: newMember.name || '',
+          role: newMember.role || 'REDACTRICE',
+          image: newMember.image,
+          order_index: maxOrder + 1
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team-members"] });
+      toast.success("Membre ajouté avec succès");
+      setIsCreating(false);
+      setEditForm({});
+    },
+    onError: (error) => {
+      console.error("Error creating team member:", error);
+      toast.error("Erreur lors de la création du membre");
+    }
+  });
 
   const updateMutation = useMutation({
     mutationFn: async (member: TeamMember) => {
@@ -143,6 +173,14 @@ export const TeamManagement = () => {
     }
   };
 
+  const handleCreate = async () => {
+    try {
+      await createMutation.mutateAsync(editForm);
+    } catch (error) {
+      console.error("Error creating team member:", error);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce membre ?")) {
       try {
@@ -165,13 +203,106 @@ export const TeamManagement = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Gestion de l'Équipe</h2>
-        <Button className="flex items-center gap-2">
+        <Button 
+          onClick={() => {
+            setIsCreating(true);
+            setEditForm({});
+          }} 
+          className="flex items-center gap-2"
+        >
           <Plus className="h-4 w-4" />
           Ajouter un membre
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {isCreating && (
+          <Card className="p-4">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Nom</Label>
+                <Input
+                  id="name"
+                  value={editForm.name || ''}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  placeholder="Nom du membre"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="role">Rôle</Label>
+                <Select
+                  value={editForm.role || 'REDACTRICE'}
+                  onValueChange={(value) => setEditForm({ ...editForm, role: value as TeamMember['role'] })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un rôle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CEO">CEO</SelectItem>
+                    <SelectItem value="DG">DG</SelectItem>
+                    <SelectItem value="SG">SG</SelectItem>
+                    <SelectItem value="REDACTRICE">REDACTRICE</SelectItem>
+                    <SelectItem value="COMMUNICATRICE">COMMUNICATRICE</SelectItem>
+                    <SelectItem value="COMMUNICATEUR">COMMUNICATEUR</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="image">Image</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        // Generate a temporary ID for the file upload
+                        const tempId = crypto.randomUUID();
+                        handleImageUpload(file, tempId);
+                      }
+                    }}
+                    className="flex-1"
+                  />
+                  {uploading && (
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  )}
+                </div>
+                {editForm.image && (
+                  <div className="mt-2">
+                    <img
+                      src={editForm.image}
+                      alt="Preview"
+                      className="w-20 h-20 object-cover rounded-full"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleCreate}
+                  className="flex-1"
+                >
+                  Créer
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setIsCreating(false);
+                    setEditForm({});
+                  }}
+                  className="flex-1"
+                >
+                  Annuler
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {teamMembers?.map((member) => (
           <Card key={member.id} className="p-4">
             {editingId === member.id ? (
@@ -245,13 +376,25 @@ export const TeamManagement = () => {
                   />
                 </div>
 
-                <Button 
-                  onClick={() => handleSave(member)}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Sauvegarder
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => handleSave(member)}
+                    className="flex-1"
+                  >
+                    <Save className="h-4 w-4" />
+                    Sauvegarder
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setEditingId(null);
+                      setEditForm({});
+                    }}
+                    className="flex-1"
+                  >
+                    Annuler
+                  </Button>
+                </div>
               </div>
             ) : (
               <div>
@@ -297,3 +440,4 @@ export const TeamManagement = () => {
     </div>
   );
 };
+
