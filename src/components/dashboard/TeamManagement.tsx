@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pencil, Save, Trash, Plus, Upload } from "lucide-react";
+import { ImagePicker } from "@/components/ui/image-picker";
+import { Pencil, Save, Trash, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export const TeamManagement = () => {
@@ -39,12 +39,10 @@ export const TeamManagement = () => {
     try {
       setUploading(true);
       
-      // Create a unique file name
       const fileExt = file.name.split('.').pop();
       const fileName = `${memberId}-${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload the file to Supabase storage
       const { error: uploadError, data } = await supabase.storage
         .from('team_images')
         .upload(filePath, file);
@@ -53,12 +51,10 @@ export const TeamManagement = () => {
         throw uploadError;
       }
 
-      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('team_images')
         .getPublicUrl(filePath);
 
-      // Update the form with the new image URL
       setEditForm({ ...editForm, image: publicUrl });
       
       toast.success("Image téléchargée avec succès");
@@ -72,7 +68,6 @@ export const TeamManagement = () => {
 
   const createMutation = useMutation({
     mutationFn: async (newMember: Partial<TeamMember>) => {
-      // Get the highest order_index
       const maxOrder = teamMembers?.reduce((max, member) => 
         Math.max(max, member.order_index || 0), 0) || 0;
 
@@ -127,13 +122,10 @@ export const TeamManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Get the member's current image URL
       const member = teamMembers?.find(m => m.id === id);
       if (member?.image) {
-        // Extract the file name from the URL
         const fileName = member.image.split('/').pop();
         if (fileName) {
-          // Delete the image from storage
           await supabase.storage
             .from('team_images')
             .remove([fileName]);
@@ -251,34 +243,15 @@ export const TeamManagement = () => {
               
               <div>
                 <Label htmlFor="image">Image</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        // Generate a temporary ID for the file upload
-                        const tempId = crypto.randomUUID();
-                        handleImageUpload(file, tempId);
-                      }
-                    }}
-                    className="flex-1"
-                  />
-                  {uploading && (
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  )}
-                </div>
-                {editForm.image && (
-                  <div className="mt-2">
-                    <img
-                      src={editForm.image}
-                      alt="Preview"
-                      className="w-20 h-20 object-cover rounded-full"
-                    />
-                  </div>
-                )}
+                <ImagePicker
+                  value={editForm.image || undefined}
+                  onChange={(file) => {
+                    const tempId = crypto.randomUUID();
+                    handleImageUpload(file, tempId);
+                  }}
+                  loading={uploading}
+                  onRemove={editForm.image ? () => setEditForm({ ...editForm, image: null }) : undefined}
+                />
               </div>
 
               <div className="flex gap-2">
@@ -338,32 +311,12 @@ export const TeamManagement = () => {
                 
                 <div>
                   <Label htmlFor="image">Image</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleImageUpload(file, member.id);
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    {uploading && (
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    )}
-                  </div>
-                  {editForm.image && (
-                    <div className="mt-2">
-                      <img
-                        src={editForm.image}
-                        alt="Preview"
-                        className="w-20 h-20 object-cover rounded-full"
-                      />
-                    </div>
-                  )}
+                  <ImagePicker
+                    value={editForm.image || undefined}
+                    onChange={(file) => handleImageUpload(file, member.id)}
+                    loading={uploading}
+                    onRemove={editForm.image ? () => setEditForm({ ...editForm, image: null }) : undefined}
+                  />
                 </div>
                 
                 <div>
@@ -421,11 +374,11 @@ export const TeamManagement = () => {
                   </div>
                 </div>
                 
-                <div className="aspect-square mb-4 rounded-full overflow-hidden">
+                <div className="aspect-square mb-4">
                   <img
                     src={member.image || "/placeholder.svg"}
                     alt={member.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-full"
                   />
                 </div>
                 
@@ -440,4 +393,3 @@ export const TeamManagement = () => {
     </div>
   );
 };
-
