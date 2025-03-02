@@ -104,6 +104,10 @@ const Index = () => {
                           src={member.image || "/placeholder.svg"}
                           alt={member.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/placeholder.svg";
+                          }}
                         />
                       </div>
                       <h3 className="text-xl font-semibold mb-2">{member.name}</h3>

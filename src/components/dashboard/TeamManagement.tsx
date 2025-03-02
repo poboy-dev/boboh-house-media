@@ -43,7 +43,7 @@ export const TeamManagement = () => {
       const fileName = `${memberId}-${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('team_images')
         .upload(filePath, file);
 
@@ -379,6 +379,10 @@ export const TeamManagement = () => {
                     src={member.image || "/placeholder.svg"}
                     alt={member.name}
                     className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/placeholder.svg";
+                    }}
                   />
                 </div>
                 
