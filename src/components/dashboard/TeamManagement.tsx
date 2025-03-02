@@ -1,20 +1,18 @@
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TeamMember } from "@/types/team";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImagePicker } from "@/components/ui/image-picker";
-import { Pencil, Save, Trash, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import { TeamMemberForm } from "./team/TeamMemberForm";
+import { TeamMemberCard } from "./team/TeamMemberCard";
 
 export const TeamManagement = () => {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<TeamMember>>({});
   const [uploading, setUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -55,12 +53,11 @@ export const TeamManagement = () => {
         .from('team_images')
         .getPublicUrl(filePath);
 
-      setEditForm({ ...editForm, image: publicUrl });
-      
-      toast.success("Image téléchargée avec succès");
+      return publicUrl;
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Erreur lors du téléchargement de l'image");
+      throw error;
     } finally {
       setUploading(false);
     }
@@ -86,7 +83,6 @@ export const TeamManagement = () => {
       queryClient.invalidateQueries({ queryKey: ["team-members"] });
       toast.success("Membre ajouté avec succès");
       setIsCreating(false);
-      setEditForm({});
     },
     onError: (error) => {
       console.error("Error creating team member:", error);
@@ -95,7 +91,7 @@ export const TeamManagement = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (member: TeamMember) => {
+    mutationFn: async (member: Partial<TeamMember> & { id: string }) => {
       const { error } = await supabase
         .from("team_members")
         .update({
@@ -112,7 +108,6 @@ export const TeamManagement = () => {
       queryClient.invalidateQueries({ queryKey: ["team-members"] });
       toast.success("Membre mis à jour avec succès");
       setEditingId(null);
-      setEditForm({});
     },
     onError: (error) => {
       console.error("Error updating team member:", error);
@@ -149,27 +144,20 @@ export const TeamManagement = () => {
     }
   });
 
-  const handleEdit = (member: TeamMember) => {
-    setEditingId(member.id);
-    setEditForm(member);
-  };
-
-  const handleSave = async (member: TeamMember) => {
+  const handleCreate = async (newMember: Partial<TeamMember>) => {
     try {
-      await updateMutation.mutateAsync({
-        ...member,
-        ...editForm
-      } as TeamMember);
+      await createMutation.mutateAsync(newMember);
     } catch (error) {
-      console.error("Error saving team member:", error);
+      console.error("Error creating team member:", error);
     }
   };
 
-  const handleCreate = async () => {
+  const handleUpdate = async (member: Partial<TeamMember>) => {
+    if (!editingId) return;
     try {
-      await createMutation.mutateAsync(editForm);
+      await updateMutation.mutateAsync({ ...member, id: editingId });
     } catch (error) {
-      console.error("Error creating team member:", error);
+      console.error("Error updating team member:", error);
     }
   };
 
@@ -196,10 +184,7 @@ export const TeamManagement = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Gestion de l'Équipe</h2>
         <Button 
-          onClick={() => {
-            setIsCreating(true);
-            setEditForm({});
-          }} 
+          onClick={() => setIsCreating(true)} 
           className="flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
@@ -210,188 +195,40 @@ export const TeamManagement = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isCreating && (
           <Card className="p-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nom</Label>
-                <Input
-                  id="name"
-                  value={editForm.name || ''}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  placeholder="Nom du membre"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="role">Rôle</Label>
-                <Select
-                  value={editForm.role || 'REDACTRICE'}
-                  onValueChange={(value) => setEditForm({ ...editForm, role: value as TeamMember['role'] })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un rôle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="CEO">CEO</SelectItem>
-                    <SelectItem value="DG">DG</SelectItem>
-                    <SelectItem value="SG">SG</SelectItem>
-                    <SelectItem value="REDACTRICE">REDACTRICE</SelectItem>
-                    <SelectItem value="COMMUNICATRICE">COMMUNICATRICE</SelectItem>
-                    <SelectItem value="COMMUNICATEUR">COMMUNICATEUR</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="image">Image</Label>
-                <ImagePicker
-                  value={editForm.image || undefined}
-                  onChange={(file) => {
-                    const tempId = crypto.randomUUID();
-                    handleImageUpload(file, tempId);
-                  }}
-                  loading={uploading}
-                  onRemove={editForm.image ? () => setEditForm({ ...editForm, image: null }) : undefined}
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleCreate}
-                  className="flex-1"
-                >
-                  Créer
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setIsCreating(false);
-                    setEditForm({});
-                  }}
-                  className="flex-1"
-                >
-                  Annuler
-                </Button>
-              </div>
-            </div>
+            <TeamMemberForm
+              onSave={handleCreate}
+              onCancel={() => setIsCreating(false)}
+              uploading={uploading}
+              onImageUpload={async (file, memberId) => {
+                const publicUrl = await handleImageUpload(file, memberId);
+                return publicUrl;
+              }}
+            />
           </Card>
         )}
 
         {teamMembers?.map((member) => (
-          <Card key={member.id} className="p-4">
-            {editingId === member.id ? (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Nom</Label>
-                  <Input
-                    id="name"
-                    value={editForm.name || member.name}
-                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="role">Rôle</Label>
-                  <Select
-                    value={editForm.role || member.role}
-                    onValueChange={(value) => setEditForm({ ...editForm, role: value as TeamMember['role'] })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un rôle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CEO">CEO</SelectItem>
-                      <SelectItem value="DG">DG</SelectItem>
-                      <SelectItem value="SG">SG</SelectItem>
-                      <SelectItem value="REDACTRICE">REDACTRICE</SelectItem>
-                      <SelectItem value="COMMUNICATRICE">COMMUNICATRICE</SelectItem>
-                      <SelectItem value="COMMUNICATEUR">COMMUNICATEUR</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="image">Image</Label>
-                  <ImagePicker
-                    value={editForm.image || undefined}
-                    onChange={(file) => handleImageUpload(file, member.id)}
-                    loading={uploading}
-                    onRemove={editForm.image ? () => setEditForm({ ...editForm, image: null }) : undefined}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="order">Ordre d'affichage</Label>
-                  <Input
-                    id="order"
-                    type="number"
-                    value={editForm.order_index || member.order_index}
-                    onChange={(e) => setEditForm({ ...editForm, order_index: parseInt(e.target.value) })}
-                  />
-                </div>
-
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => handleSave(member)}
-                    className="flex-1"
-                  >
-                    <Save className="h-4 w-4" />
-                    Sauvegarder
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      setEditingId(null);
-                      setEditForm({});
-                    }}
-                    className="flex-1"
-                  >
-                    Annuler
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">{member.name}</h3>
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleEdit(member)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => handleDelete(member.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="aspect-square mb-4">
-                  <img
-                    src={member.image || "/placeholder.svg"}
-                    alt={member.name}
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder.svg";
-                    }}
-                  />
-                </div>
-                
-                <p className="text-sm text-muted-foreground">
-                  Ordre d'affichage: {member.order_index}
-                </p>
-              </div>
-            )}
-          </Card>
+          editingId === member.id ? (
+            <Card key={member.id} className="p-4">
+              <TeamMemberForm
+                member={member}
+                onSave={handleUpdate}
+                onCancel={() => setEditingId(null)}
+                uploading={uploading}
+                onImageUpload={async (file, memberId) => {
+                  const publicUrl = await handleImageUpload(file, memberId);
+                  return publicUrl;
+                }}
+              />
+            </Card>
+          ) : (
+            <TeamMemberCard
+              key={member.id}
+              member={member}
+              onEdit={(member) => setEditingId(member.id)}
+              onDelete={handleDelete}
+            />
+          )
         ))}
       </div>
     </div>
