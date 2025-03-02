@@ -15,6 +15,12 @@ export const TeamMemberForm = ({ member, onSave, onCancel, uploading, onImageUpl
     await onSave(form);
   };
 
+  const handleImageUpload = async (file: File) => {
+    const tempId = member?.id || crypto.randomUUID();
+    const imageUrl = await onImageUpload(file, tempId);
+    setForm({ ...form, image: imageUrl });
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -49,15 +55,14 @@ export const TeamMemberForm = ({ member, onSave, onCancel, uploading, onImageUpl
       
       <div>
         <Label htmlFor="image">Image</Label>
-        <ImagePicker
-          value={form.image || undefined}
-          onChange={(file) => {
-            const tempId = member?.id || crypto.randomUUID();
-            onImageUpload(file, tempId);
-          }}
-          loading={uploading}
-          onRemove={form.image ? () => setForm({ ...form, image: null }) : undefined}
-        />
+        <div className="relative w-32 h-32 mx-auto">
+          <ImagePicker
+            value={form.image || undefined}
+            onChange={handleImageUpload}
+            loading={uploading}
+            onRemove={form.image ? () => setForm({ ...form, image: null }) : undefined}
+          />
+        </div>
       </div>
 
       {member && (

@@ -6,7 +6,7 @@ export interface TeamMemberFormProps {
   onSave: (member: Partial<TeamMember>) => Promise<void>;
   onCancel: () => void;
   uploading?: boolean;
-  onImageUpload: (file: File, memberId: string) => Promise<void>;
+  onImageUpload: (file: File, memberId: string) => Promise<string>;
 }
 
 export interface TeamMemberCardProps {

@@ -31,7 +31,7 @@ export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps
           </div>
         </div>
         
-        <div className="aspect-square mb-4">
+        <div className="relative w-32 h-32 mx-auto mb-4">
           <img
             src={member.image || "/placeholder.svg"}
             alt={member.name}
@@ -43,7 +43,7 @@ export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps
           />
         </div>
         
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground text-center">
           Ordre d'affichage: {member.order_index}
         </p>
       </div>
