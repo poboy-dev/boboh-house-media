@@ -5,6 +5,8 @@ import { testTableAccess } from "@/services/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TeamMember } from "@/types/team";
+import { Article } from "@/types/article";
+import { ArrowRight } from "lucide-react";
 
 const Index = () => {
   useEffect(() => {
@@ -29,6 +31,24 @@ const Index = () => {
       }
       
       return data as TeamMember[];
+    }
+  });
+
+  const { data: recentArticles, isLoading: isLoadingArticles } = useQuery({
+    queryKey: ["recent-articles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .order('created_at', { ascending: false })
+        .limit(5);
+      
+      if (error) {
+        console.error("Error fetching recent articles:", error);
+        throw error;
+      }
+      
+      return data as Article[];
     }
   });
 
@@ -78,6 +98,64 @@ const Index = () => {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Recent Articles Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-16">Articles Récents</h2>
+          {isLoadingArticles ? (
+            <div className="w-full flex justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recentArticles?.map((article) => (
+                <div key={article.id} className="flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
+                  <div className="relative h-48">
+                    <img
+                      src={article.image || "/placeholder.svg"}
+                      alt={article.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
+                    />
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {new Date(article.created_at).toLocaleDateString()}
+                      </p>
+                      <h3 className="text-xl font-semibold mb-2 line-clamp-2">{article.title}</h3>
+                      <p className="text-muted-foreground line-clamp-3 mb-4">
+                        {article.description}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center mt-4">
+                      {article.category && (
+                        <Link 
+                          to={`/${article.category}`} 
+                          className="text-sm text-primary hover:underline flex items-center gap-1"
+                        >
+                          Plus d'articles {article.category}
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      )}
+                      <Link 
+                        to={`/articles/${article.id}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Lire plus
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
