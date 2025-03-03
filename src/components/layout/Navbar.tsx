@@ -13,13 +13,10 @@ export const Navbar = () => {
   // Hide navbar ONLY on dashboard routes
   const isDashboard = location.pathname.startsWith("/dashboard");
 
-  // Early return if we're on a dashboard route
   if (isDashboard) {
-    console.log("On dashboard route, hiding navbar");
     return null;
   }
 
-  console.log("Not on dashboard route, showing navbar");
   return (
     <nav className="fixed w-full gradient-header z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,6 +38,7 @@ export const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-white hover:text-gray-300 p-2"
+              aria-label="Toggle menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -50,10 +48,12 @@ export const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden bg-secondary">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+        <div className="md:hidden gradient-header">
+          <div className="px-2 pt-2 pb-3 space-y-2">
             <NavLinks />
-            <AuthButton />
+            <div className="pt-2">
+              <AuthButton />
+            </div>
           </div>
         </div>
       )}
