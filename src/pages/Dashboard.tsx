@@ -1,4 +1,3 @@
-
 import { useSession } from "@supabase/auth-helpers-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -12,6 +11,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { CategoryManagement } from "@/components/dashboard/categories/CategoryManagement";
 
 const Dashboard = () => {
   const session = useSession();
@@ -23,6 +23,7 @@ const Dashboard = () => {
   const isServicesRoute = location.pathname === "/dashboard/services";
   const isTeamRoute = location.pathname === "/dashboard/team";
   const isAboutRoute = location.pathname === "/dashboard/about";
+  const isCategoriesRoute = location.pathname === "/dashboard/categories";
 
   useEffect(() => {
     const checkSession = async () => {
@@ -89,7 +90,9 @@ const Dashboard = () => {
         <DashboardSidebar />
         <main className="flex-1 p-6">
           <div className="container mx-auto">
-            {isArticlesRoute ? (
+            {isCategoriesRoute ? (
+              <CategoryManagement />
+            ) : isArticlesRoute ? (
               <ArticlesTable />
             ) : isUsersRoute ? (
               <UserManagement />

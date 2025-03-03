@@ -2,7 +2,7 @@
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Home, LayoutDashboard, FileText, Users, Settings, Info, UsersRound } from "lucide-react";
+import { Home, LayoutDashboard, FileText, Users, Settings, Info, UsersRound, FolderTree } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -60,6 +60,11 @@ export const DashboardSidebar = () => {
       path: "/dashboard/articles",
     },
     {
+      title: "Catégories",
+      icon: FolderTree,
+      path: "/dashboard/categories",
+    },
+    {
       title: "Services",
       icon: Settings,
       path: "/dashboard/services",
@@ -74,7 +79,6 @@ export const DashboardSidebar = () => {
       icon: Info,
       path: "/dashboard/about",
     },
-    // Only show users management menu item for admins
     ...(isAdmin ? [{
       title: "Gestion des utilisateurs",
       icon: Users,
