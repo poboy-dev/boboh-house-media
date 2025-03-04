@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { getArticleById } from '@/services/supabase';
 import { Skeleton } from "@/components/ui/skeleton";
+import { Comments } from "./comments/Comments";
 
 export const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,6 +68,7 @@ export const ArticleDetail = () => {
       <div className="prose prose-lg max-w-none">
         {article.content}
       </div>
+      <Comments articleId={article.id} />
     </article>
   );
 };
