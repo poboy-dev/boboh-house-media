@@ -10,6 +10,7 @@ export interface Article {
   image: string;
   date: string;
   author: string;
+  author_name?: string;
   created_at: string;
   updated_at: string;
   views: number | null;

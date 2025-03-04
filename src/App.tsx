@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -19,6 +18,7 @@ import { ArticleDetail } from "@/components/ArticleDetail";
 import { useSession, useSupabaseClient, SessionContextProvider } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import CategoryArticles from "@/pages/CategoryArticles";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,6 +91,7 @@ function App() {
               <Route path="/bobohgeek" element={<BobohGeek />} />
               <Route path="/bh-association" element={<BHAssociation />} />
               <Route path="/articles/:id" element={<ArticleDetail />} />
+              <Route path="/category/:slug" element={<CategoryArticles />} />
             </Routes>
             <Footer />
           </div>

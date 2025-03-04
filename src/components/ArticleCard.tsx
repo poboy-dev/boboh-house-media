@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Article } from "@/types/article";
 import { Link } from "react-router-dom";
@@ -23,7 +24,9 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-muted-foreground">{article.date}</span>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{article.author}</span>
+              <span className="text-sm text-muted-foreground">
+                {article.author_name || 'Anonymous'}
+              </span>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Eye size={16} />
                 <span>{article.views || 0}</span>

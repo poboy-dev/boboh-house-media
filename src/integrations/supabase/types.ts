@@ -84,6 +84,13 @@ export type Database = {
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "article_likes_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles_with_authors"
+            referencedColumns: ["id"]
+          },
         ]
       }
       articles: {
@@ -175,24 +182,37 @@ export type Database = {
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comments_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles_with_authors"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
         Row: {
           created_at: string
+          first_name: string | null
           id: string
+          last_name: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
         }
         Insert: {
           created_at?: string
+          first_name?: string | null
           id: string
+          last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
         Update: {
           created_at?: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
@@ -260,7 +280,50 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      articles_with_authors: {
+        Row: {
+          author: string | null
+          author_name: string | null
+          category: string | null
+          content: string | null
+          created_at: string | null
+          date: string | null
+          description: string | null
+          id: string | null
+          image: string | null
+          likes: number | null
+          title: string | null
+          updated_at: string | null
+          views: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_article_category"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "article_categories"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      user_full_names: {
+        Row: {
+          full_name: string | null
+          id: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Insert: {
+          full_name?: never
+          id?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Update: {
+          full_name?: never
+          id?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       increment_article_views: {

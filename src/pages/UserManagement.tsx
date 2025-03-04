@@ -166,6 +166,7 @@ export const UserManagement = () => {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Name</TableHead>
             <TableHead>ID</TableHead>
             <TableHead>Rôle</TableHead>
             <TableHead>Date de création</TableHead>
@@ -175,6 +176,7 @@ export const UserManagement = () => {
         <TableBody>
           {users?.map((user) => (
             <TableRow key={user.id}>
+              <TableCell>{`${user.first_name || ''} ${user.last_name || ''}`}</TableCell>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>
