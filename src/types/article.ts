@@ -1,3 +1,4 @@
+
 export type ArticleCategory = 'portfolio' | 'bobohgeek' | 'bh-association';
 
 export interface Article {
@@ -12,4 +13,5 @@ export interface Article {
   created_at: string;
   updated_at: string;
   views: number | null;
+  likes: number | null;
 }
