@@ -14,7 +14,10 @@ export const LikeButton = ({ articleId, initialLikes }: LikeButtonProps) => {
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
 
-  const handleLike = async () => {
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent link navigation
+    e.stopPropagation(); // Stop event bubbling
+    
     try {
       if (isLiked) {
         const { error } = await supabase
