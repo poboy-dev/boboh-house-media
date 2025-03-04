@@ -15,29 +15,33 @@ export const DashboardStats = () => {
     queryFn: async () => {
       const { data: articles, error } = await supabase
         .from("articles")
-        .select("category, views");
+        .select("category, views, likes");
 
       if (error) throw error;
 
-      const categoryStats = articles.reduce((acc: Record<string, { count: number; views: number }>, article) => {
+      const categoryStats = articles.reduce((acc: Record<string, { count: number; views: number; likes: number }>, article) => {
         const category = article.category || "Non catégorisé";
         if (!acc[category]) {
-          acc[category] = { count: 0, views: 0 };
+          acc[category] = { count: 0, views: 0, likes: 0 };
         }
         acc[category].count += 1;
         acc[category].views += article.views || 0;
+        acc[category].likes += article.likes || 0;
         return acc;
       }, {});
 
       const totalViews = articles.reduce((sum, article) => sum + (article.views || 0), 0);
+      const totalLikes = articles.reduce((sum, article) => sum + (article.likes || 0), 0);
 
       return {
         categoryStats,
         totalViews,
-        chartData: Object.entries(categoryStats).map(([name, { count, views }]) => ({
+        totalLikes,
+        chartData: Object.entries(categoryStats).map(([name, { count, views, likes }]) => ({
           name,
           articles: count,
           views,
+          likes,
         })),
       };
     },
@@ -47,7 +51,7 @@ export const DashboardStats = () => {
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Statistiques</h2>
       
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Vues totales</CardTitle>
@@ -55,6 +59,16 @@ export const DashboardStats = () => {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{stats?.totalViews || 0}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Likes totaux</CardTitle>
+            <CardDescription>Nombre total de likes pour tous les articles</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{stats?.totalLikes || 0}</p>
           </CardContent>
         </Card>
 
@@ -71,6 +85,7 @@ export const DashboardStats = () => {
                 <Tooltip />
                 <Bar dataKey="articles" fill="hsl(var(--primary))" name="Articles" />
                 <Bar dataKey="views" fill="hsl(var(--secondary))" name="Vues" />
+                <Bar dataKey="likes" fill="hsl(var(--tertiary))" name="Likes" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

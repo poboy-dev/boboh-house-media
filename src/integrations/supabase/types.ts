@@ -57,6 +57,35 @@ export type Database = {
         }
         Relationships: []
       }
+      article_likes: {
+        Row: {
+          article_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_likes_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           author: string | null
@@ -67,6 +96,7 @@ export type Database = {
           description: string | null
           id: string
           image: string | null
+          likes: number | null
           title: string
           updated_at: string
           views: number | null
@@ -80,6 +110,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          likes?: number | null
           title: string
           updated_at?: string
           views?: number | null
@@ -93,6 +124,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          likes?: number | null
           title?: string
           updated_at?: string
           views?: number | null

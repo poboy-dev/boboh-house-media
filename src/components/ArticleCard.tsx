@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Article } from "@/types/article";
 import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
+import { LikeButton } from "./LikeButton";
 
 interface ArticleCardProps {
   article: Article;
@@ -27,6 +28,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                 <Eye size={16} />
                 <span>{article.views || 0}</span>
               </div>
+              <LikeButton articleId={article.id} initialLikes={article.likes || 0} />
             </div>
           </div>
           <CardTitle className="line-clamp-2">{article.title}</CardTitle>
