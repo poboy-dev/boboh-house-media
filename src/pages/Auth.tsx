@@ -110,11 +110,19 @@ const Auth = () => {
                 password_input_placeholder: 'Votre mot de passe',
                 button_label: "S'inscrire",
                 loading_button_label: 'Inscription en cours ...',
+                first_name_label: 'Prénom',
+                first_name_input_placeholder: 'Votre prénom',
+                last_name_label: 'Nom',
+                last_name_input_placeholder: 'Votre nom'
               }
             }
           }}
           providers={[]}
           redirectTo={window.location.origin}
+          additionalData={{
+            first_name: true,
+            last_name: true
+          }}
         />
       </div>
     </div>
