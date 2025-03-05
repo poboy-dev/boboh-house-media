@@ -1,4 +1,3 @@
-
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
@@ -109,11 +108,7 @@ const Auth = () => {
                 email_input_placeholder: 'Votre email',
                 password_input_placeholder: 'Votre mot de passe',
                 button_label: "S'inscrire",
-                loading_button_label: 'Inscription en cours ...',
-                first_name_label: 'Prénom',
-                first_name_input_placeholder: 'Votre prénom',
-                last_name_label: 'Nom',
-                last_name_input_placeholder: 'Votre nom'
+                loading_button_label: 'Inscription en cours ...'
               }
             }
           }}
