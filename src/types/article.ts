@@ -1,5 +1,4 @@
-
-export type ArticleCategory = 'portfolio' | 'bobohgeek' | 'bh-association';
+export type ArticleCategory = string;
 
 export interface Article {
   id: string;

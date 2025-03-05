@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { Article, ArticleCategory } from '@/types/article';
+import { Article } from '@/types/article';
 import { ArticleCard } from './ArticleCard';
 import { getArticles } from '@/services/supabase';
 
 interface ArticlesListProps {
-  category?: ArticleCategory;
+  category?: string;
 }
 
 export const ArticlesList = ({ category }: ArticlesListProps) => {
