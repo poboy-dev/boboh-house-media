@@ -114,9 +114,20 @@ const Auth = () => {
           }}
           providers={[]}
           redirectTo={window.location.origin}
-          additionalData={{
-            first_name: true,
-            last_name: true
+          view="sign_up"
+          options={{
+            additionalData: {
+              firstName: {
+                required: true,
+                displayName: "Prénom",
+                placeholder: "Votre prénom"
+              },
+              lastName: {
+                required: true,
+                displayName: "Nom",
+                placeholder: "Votre nom"
+              }
+            }
           }}
         />
       </div>
