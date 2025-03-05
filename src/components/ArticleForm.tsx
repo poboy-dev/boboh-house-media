@@ -1,8 +1,8 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
@@ -13,6 +13,8 @@ import { ArticleFormDescription } from "./forms/article/ArticleFormDescription";
 import { ArticleFormContent } from "./forms/article/ArticleFormContent";
 import { ArticleFormCategory } from "./forms/article/ArticleFormCategory";
 import { articleFormSchema, ArticleFormSchema } from "./forms/article/schema";
+import { ImagePicker } from "@/components/ui/image-picker";
+import { useState } from "react";
 
 interface ArticleFormProps {
   initialData?: Article;
@@ -22,6 +24,7 @@ interface ArticleFormProps {
 export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
   const session = useSession();
   const queryClient = useQueryClient();
+  const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<ArticleFormSchema>({
     resolver: zodResolver(articleFormSchema),
@@ -34,6 +37,35 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
       date: new Date().toISOString().split("T")[0],
     },
   });
+
+  const handleImageUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('articles')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('articles')
+        .getPublicUrl(filePath);
+
+      form.setValue('image', publicUrl);
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Error uploading image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: async (values: ArticleFormSchema) => {
@@ -100,13 +132,14 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-              Image URL
+            <label className="block text-sm font-medium text-gray-700">
+              Image
             </label>
-            <Input
-              id="image"
-              {...form.register("image")}
-              placeholder="URL de l'image"
+            <ImagePicker
+              onChange={handleImageUpload}
+              value={form.watch('image')}
+              onRemove={() => form.setValue('image', '')}
+              loading={isUploading}
             />
           </div>
 
@@ -114,10 +147,11 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
             <label htmlFor="date" className="block text-sm font-medium text-gray-700">
               Date
             </label>
-            <Input
+            <input
               id="date"
               type="date"
               {...form.register("date")}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2"
             />
           </div>
         </div>
