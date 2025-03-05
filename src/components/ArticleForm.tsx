@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -45,7 +44,7 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('articles')
         .upload(filePath, file);
 
@@ -57,6 +56,7 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
         .from('articles')
         .getPublicUrl(filePath);
 
+      console.log('Image uploaded successfully, public URL:', publicUrl);
       form.setValue('image', publicUrl);
       toast.success('Image uploaded successfully');
     } catch (error) {
@@ -74,7 +74,6 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
         throw new Error("User not authenticated");
       }
 
-      // Ensure all required fields are present and properly typed
       const articleData = {
         title: values.title,
         description: values.description,
@@ -83,7 +82,7 @@ export const ArticleForm = ({ initialData, onSuccess }: ArticleFormProps) => {
         image: values.image,
         date: values.date,
         author: session.user.id,
-        views: initialData?.views || 0, // Include views field with default value
+        views: initialData?.views || 0,
       };
 
       console.log("Saving article with data:", articleData);

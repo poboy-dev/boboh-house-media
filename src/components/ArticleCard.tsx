@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Article } from "@/types/article";
 import { Link } from "react-router-dom";
@@ -13,12 +12,23 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
   return (
     <Link to={`/articles/${article.id}`}>
       <Card className="h-full hover:shadow-lg transition-shadow duration-300">
-        <div className="aspect-video w-full overflow-hidden">
-          <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
+        <div className="aspect-video w-full overflow-hidden relative">
+          {article.image ? (
+            <img
+              src={article.image}
+              alt={article.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Image failed to load:', article.image);
+                const target = e.target as HTMLImageElement;
+                target.src = "/placeholder.svg";
+              }}
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-400">No image</span>
+            </div>
+          )}
         </div>
         <CardHeader>
           <div className="flex justify-between items-center mb-2">
