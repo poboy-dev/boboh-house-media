@@ -171,11 +171,19 @@ const Index = () => {
                 </div>
               ) : (
                 teamMembers?.map((member, index) => {
-                  const imageUrl = member.image?.startsWith('http') 
-                    ? member.image 
-                    : member.image 
-                      ? supabase.storage.from('team_images').getPublicUrl(member.image).data.publicUrl 
-                      : "/placeholder.svg";
+                  let imageUrl = "/placeholder.svg";
+                  
+                  if (member.image) {
+                    if (member.image.startsWith('http')) {
+                      imageUrl = member.image;
+                    } else {
+                      const { data } = supabase.storage
+                        .from('team_images')
+                        .getPublicUrl(member.image);
+                      imageUrl = data.publicUrl;
+                      console.log('Generated image URL:', imageUrl);
+                    }
+                  }
 
                   return (
                     <div 
@@ -193,7 +201,7 @@ const Index = () => {
                             onError={(e) => {
                               console.error('Team member image failed to load:', imageUrl);
                               const target = e.target as HTMLImageElement;
-                              target.onerror = null; // Prevent infinite loop
+                              target.onerror = null;
                               target.src = "/placeholder.svg";
                             }}
                           />
