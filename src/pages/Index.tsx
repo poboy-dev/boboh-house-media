@@ -177,16 +177,21 @@ const Index = () => {
                     style={{ animationDelay: `${index * 200}ms` }}
                   >
                     <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-                      <div className="w-48 h-48 mb-4 overflow-hidden rounded-full">
-                        <img 
-                          src={member.image || "/placeholder.svg"}
-                          alt={member.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/placeholder.svg";
-                          }}
-                        />
+                      <div className="w-48 h-48 mb-4 overflow-hidden rounded-full bg-gray-100">
+                        {member.image && (
+                          <img 
+                            src={member.image}
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              console.error('Team member image failed to load:', member.image);
+                              const target = e.target as HTMLImageElement;
+                              target.onerror = null; // Prevent infinite loop
+                              target.src = "/placeholder.svg";
+                            }}
+                          />
+                        )}
                       </div>
                       <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
                       <p className="text-gray-600">{member.role}</p>
