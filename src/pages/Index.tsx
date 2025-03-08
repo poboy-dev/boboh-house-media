@@ -137,7 +137,7 @@ const Index = () => {
                     <div className="flex justify-between items-center mt-4">
                       {article.category && (
                         <Link 
-                          to={`/${article.category}`} 
+                          to={`/category/${article.category}`} 
                           className="text-sm text-primary hover:underline flex items-center gap-1"
                         >
                           Plus d'articles {article.category}
