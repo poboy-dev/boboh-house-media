@@ -3,8 +3,28 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pencil, Trash } from "lucide-react";
 import { TeamMemberCardProps } from "./types";
+import { supabase } from "@/integrations/supabase/client";
 
 export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps) => {
+  let imageUrl = "/placeholder.svg";
+  
+  if (member.image) {
+    // Handle both direct URLs and storage references
+    if (member.image.startsWith('http')) {
+      imageUrl = member.image;
+    } else {
+      // Check if the path starts with a slash and remove it if needed
+      const imagePath = member.image.startsWith('/') ? member.image.substring(1) : member.image;
+      const { data } = supabase.storage
+        .from('team_images')
+        .getPublicUrl(imagePath);
+      
+      if (data && data.publicUrl) {
+        imageUrl = data.publicUrl;
+      }
+    }
+  }
+
   return (
     <Card className="p-4">
       <div>
@@ -33,7 +53,7 @@ export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps
         
         <div className="relative w-32 h-32 mx-auto mb-4">
           <img
-            src={member.image || "/placeholder.svg"}
+            src={imageUrl}
             alt={member.name}
             className="w-full h-full object-cover rounded-full"
             onError={(e) => {

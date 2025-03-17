@@ -12,14 +12,20 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
   let imageUrl = "/placeholder.svg";
   
   if (member.image) {
+    // Handle both direct URLs and storage references
     if (member.image.startsWith('http')) {
       imageUrl = member.image;
     } else {
+      // Check if the path starts with a slash and remove it if needed
+      const imagePath = member.image.startsWith('/') ? member.image.substring(1) : member.image;
       const { data } = supabase.storage
         .from('team_images')
-        .getPublicUrl(member.image);
-      imageUrl = data.publicUrl;
-      console.log('Generated image URL:', imageUrl);
+        .getPublicUrl(imagePath);
+      
+      if (data && data.publicUrl) {
+        imageUrl = data.publicUrl;
+        console.log('Generated image URL:', imageUrl);
+      }
     }
   }
 
