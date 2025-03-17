@@ -1,3 +1,4 @@
+
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,6 +60,9 @@ const Auth = () => {
         <h2 className="text-2xl font-bold text-center text-foreground mb-8">
           Bienvenue sur BobohHouse Media
         </h2>
+        <p className="text-center text-muted-foreground mb-6">
+          Connectez-vous pour accéder à votre espace
+        </p>
         <SupabaseAuth 
           supabaseClient={supabase}
           appearance={{ 
@@ -101,25 +105,16 @@ const Auth = () => {
                 password_input_placeholder: 'Votre mot de passe',
                 button_label: 'Se connecter',
                 loading_button_label: 'Connexion en cours ...',
-              },
-              sign_up: {
-                email_label: 'Email',
-                password_label: 'Mot de passe',
-                email_input_placeholder: 'Votre email',
-                password_input_placeholder: 'Votre mot de passe',
-                button_label: "S'inscrire",
-                loading_button_label: 'Inscription en cours ...'
               }
             }
           }}
           providers={[]}
           redirectTo={window.location.origin}
-          view="sign_up"
-          additionalData={{
-            first_name: true,
-            last_name: true
-          }}
+          view="sign_in"
         />
+        <p className="text-sm text-center text-muted-foreground mt-6">
+          Les inscriptions sont gérées par les administrateurs.
+        </p>
       </div>
     </div>
   );
