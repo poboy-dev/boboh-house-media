@@ -1,3 +1,4 @@
+
 import { useSession } from "@supabase/auth-helpers-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -12,12 +13,15 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CategoryManagement } from "@/components/dashboard/categories/CategoryManagement";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Dashboard = () => {
   const session = useSession();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [hasValidSession, setHasValidSession] = useState(false);
+  const isMobile = useIsMobile();
+  
   const isArticlesRoute = location.pathname === "/dashboard/articles";
   const isUsersRoute = location.pathname === "/dashboard/users";
   const isServicesRoute = location.pathname === "/dashboard/services";
@@ -86,10 +90,10 @@ const Dashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex flex-col md:flex-row w-full">
         <DashboardSidebar />
-        <main className="flex-1 p-6">
-          <div className="container mx-auto">
+        <main className="flex-1 p-3 md:p-6 overflow-x-auto">
+          <div className="container mx-auto px-0 md:px-4">
             {isCategoriesRoute ? (
               <CategoryManagement />
             ) : isArticlesRoute ? (

@@ -2,7 +2,7 @@
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Home, LayoutDashboard, FileText, Users, Settings, Info, UsersRound, FolderTree } from "lucide-react";
+import { Home, LayoutDashboard, FileText, Users, Settings, Info, UsersRound, FolderTree, Menu } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -13,12 +13,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar
 } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 
 export const DashboardSidebar = () => {
   const session = useSession();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const { toggleSidebar } = useSidebar();
 
   const { data: profile } = useQuery({
     queryKey: ["userProfile"],
@@ -86,29 +92,50 @@ export const DashboardSidebar = () => {
     }] : []),
   ];
 
+  // Mobile menu toggle button
+  const MobileMenuToggle = () => (
+    <div className="fixed top-4 right-4 z-50 md:hidden">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={toggleSidebar}
+        className="h-10 w-10 rounded-full shadow-md bg-background"
+      >
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Menu</span>
+      </Button>
+    </div>
+  );
+
   return (
-    <Sidebar className="bg-white shadow-lg">
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.path)}
-                    className="flex items-center gap-2"
-                    isActive={location.pathname === item.path}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <>
+      <MobileMenuToggle />
+      <Sidebar className="bg-white shadow-lg">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        navigate(item.path);
+                        if (isMobile) toggleSidebar();
+                      }}
+                      className="flex items-center gap-2"
+                      isActive={location.pathname === item.path}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </>
   );
 };
