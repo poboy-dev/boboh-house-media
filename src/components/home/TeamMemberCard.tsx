@@ -16,15 +16,23 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
     if (member.image.startsWith('http')) {
       imageUrl = member.image;
     } else {
-      // Check if the path starts with a slash and remove it if needed
-      const imagePath = member.image.startsWith('/') ? member.image.substring(1) : member.image;
-      const { data } = supabase.storage
-        .from('team_images')
-        .getPublicUrl(imagePath);
-      
-      if (data && data.publicUrl) {
-        imageUrl = data.publicUrl;
-        console.log('Generated image URL:', imageUrl);
+      try {
+        // Check if the path starts with a slash and remove it if needed
+        const imagePath = member.image.startsWith('/') ? member.image.substring(1) : member.image;
+        
+        // For image paths with spaces, ensure they're properly encoded
+        const encodedPath = encodeURIComponent(imagePath).replace(/%2F/g, '/');
+        
+        const { data } = supabase.storage
+          .from('team_images')
+          .getPublicUrl(encodedPath);
+        
+        if (data && data.publicUrl) {
+          imageUrl = data.publicUrl;
+          console.log('Generated image URL:', imageUrl);
+        }
+      } catch (error) {
+        console.error('Error generating image URL:', error);
       }
     }
   }
