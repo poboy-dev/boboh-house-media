@@ -7,8 +7,8 @@
   @apply bg-gradient-to-r from-primary to-secondary;
 }
 
-/* Add sidebar styling */
+/* Update sidebar styling */
 .sidebar-background {
-  @apply bg-white border-r border-gray-200;
+  @apply bg-gradient-to-r from-primary to-secondary text-white;
 }
 
