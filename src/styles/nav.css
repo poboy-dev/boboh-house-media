@@ -6,3 +6,9 @@
 .gradient-header {
   @apply bg-gradient-to-r from-primary to-secondary;
 }
+
+/* Add sidebar styling */
+.sidebar-background {
+  @apply bg-white border-r border-gray-200;
+}
+

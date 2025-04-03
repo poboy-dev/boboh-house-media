@@ -110,10 +110,10 @@ export const DashboardSidebar = () => {
   return (
     <>
       <MobileMenuToggle />
-      <Sidebar className="bg-white shadow-lg">
+      <Sidebar className="sidebar-background shadow-lg">
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-gray-800">Navigation</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => (
@@ -123,7 +123,7 @@ export const DashboardSidebar = () => {
                         navigate(item.path);
                         if (isMobile) toggleSidebar();
                       }}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-gray-700 hover:bg-gray-100"
                       isActive={location.pathname === item.path}
                     >
                       <item.icon className="h-4 w-4" />
