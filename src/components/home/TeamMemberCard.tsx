@@ -16,20 +16,13 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
       imageUrl = member.image;
     } else {
       try {
-        // Remove leading slash if present (Supabase paths shouldn't start with /)
-        const imagePath = member.image.startsWith('/') 
-          ? member.image.substring(1) 
-          : member.image;
+        // Remove any leading/trailing whitespace and slashes
+        const cleanPath = member.image.trim().replace(/^\/+/, '');
         
-        // Let Supabase handle the encoding
-        const { data } = supabase.storage
-          .from('team_images')
-          .getPublicUrl(imagePath);
+        // Use the simple format that works for articles
+        imageUrl = `${supabase.storage.from('team_images').getPublicUrl(cleanPath).data.publicUrl}?${Date.now()}`;
         
-        if (data?.publicUrl) {
-          imageUrl = data.publicUrl;
-          console.log('Generated image URL:', imageUrl);
-        }
+        console.log('Generated image URL:', imageUrl);
       } catch (error) {
         console.error('Error generating image URL:', error);
       }
