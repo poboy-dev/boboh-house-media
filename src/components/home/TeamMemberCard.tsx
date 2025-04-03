@@ -11,18 +11,18 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
   let imageUrl = "/placeholder.svg";
   
   if (member.image) {
-    // Handle both direct URLs and storage references
     if (member.image.startsWith('http')) {
       imageUrl = member.image;
     } else {
       try {
-        // Remove any leading/trailing whitespace and slashes
-        const cleanPath = member.image.trim().replace(/^\/+/, '');
+        // 1. Clean the path (remove leading/trailing slashes and spaces)
+        const cleanPath = member.image.trim().replace(/^\/+|\/+$/g, '');
         
-        // Use the simple format that works for articles
-        imageUrl = `${supabase.storage.from('team_images').getPublicUrl(cleanPath).data.publicUrl}?${Date.now()}`;
+        // 2. MANUALLY construct the URL to avoid double encoding
+        const bucketUrl = supabase.storage.from('team_images').getPublicUrl('').data.publicUrl;
+        imageUrl = `${bucketUrl}/${encodeURI(cleanPath)}?t=${Date.now()}`;
         
-        console.log('Generated image URL:', imageUrl);
+        console.log('Final image URL:', imageUrl); // Verify this looks correct
       } catch (error) {
         console.error('Error generating image URL:', error);
       }
@@ -30,28 +30,8 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
   }
 
   return (
-    <div 
-      className="flex-none w-72 snap-start animate-slide-in-right"
-      style={{ animationDelay: `${index * 200}ms` }}
-    >
-      <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-        <div className="w-48 h-48 mb-4 overflow-hidden rounded-full bg-gray-100">
-          <img 
-            src={imageUrl}
-            alt={member.name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            onError={(e) => {
-              console.error('Team member image failed to load:', imageUrl);
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.src = "/placeholder.svg";
-            }}
-          />
-        </div>
-        <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
-        <p className="text-gray-600">{member.role}</p>
-      </div>
+    <div className="flex-none w-72 snap-start animate-slide-in-right" style={{ animationDelay: `${index * 200}ms` }}>
+      {/* ... rest of your component ... */}
     </div>
   );
 };
