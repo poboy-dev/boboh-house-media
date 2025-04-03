@@ -1,4 +1,3 @@
-
 import React from "react";
 import { TeamMember } from "@/types/team";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,17 +16,17 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
       imageUrl = member.image;
     } else {
       try {
-        // Check if the path starts with a slash and remove it if needed
-        const imagePath = member.image.startsWith('/') ? member.image.substring(1) : member.image;
+        // Remove leading slash if present (Supabase paths shouldn't start with /)
+        const imagePath = member.image.startsWith('/') 
+          ? member.image.substring(1) 
+          : member.image;
         
-        // For image paths with spaces, ensure they're properly encoded
-        const encodedPath = encodeURIComponent(imagePath).replace(/%2F/g, '/');
-        
+        // Let Supabase handle the encoding
         const { data } = supabase.storage
           .from('team_images')
-          .getPublicUrl(encodedPath);
+          .getPublicUrl(imagePath);
         
-        if (data && data.publicUrl) {
+        if (data?.publicUrl) {
           imageUrl = data.publicUrl;
           console.log('Generated image URL:', imageUrl);
         }
