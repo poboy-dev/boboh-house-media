@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -12,7 +11,6 @@ const SheetTrigger = SheetPrimitive.Trigger
 
 const SheetClose = SheetPrimitive.Close
 
-// Remove the className prop since it's not supported in DialogPortalProps
 const SheetPortal = ({
   ...props
 }: SheetPrimitive.DialogPortalProps) => (
@@ -66,7 +64,7 @@ const SheetContent = React.forwardRef<
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}
-      className={cn(sheetVariants({ side }), "bg-gradient-to-r from-primary to-secondary text-white", className)}
+      className={cn(sheetVariants({ side }), "bg-gradient-to-r from-primary to-secondary text-black", className)}
       {...props}
     >
       {children}
