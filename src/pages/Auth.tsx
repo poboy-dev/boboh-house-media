@@ -120,21 +120,6 @@ const Auth = () => {
           providers={[]}
           redirectTo={window.location.origin}
           view="sign_up"
-          // We need to use metadataFields instead of extendedSignUp
-          metaFields={[
-            {
-              name: 'first_name',
-              required: true,
-              label: 'Prénom',
-              placeholder: 'Votre prénom'
-            },
-            {
-              name: 'last_name',
-              required: true,
-              label: 'Nom',
-              placeholder: 'Votre nom'
-            }
-          ]}
         />
         <p className="text-sm text-center text-muted-foreground mt-6">
           Les inscriptions sont gérées par les administrateurs.
