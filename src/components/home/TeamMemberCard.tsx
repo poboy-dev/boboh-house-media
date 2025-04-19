@@ -1,3 +1,4 @@
+
 import React from "react";
 import { TeamMember } from "@/types/team";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,33 +28,20 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
 
       try {
         setIsLoading(true);
-        // Clean the path (remove leading/trailing slashes and spaces)
-        const cleanPath = member.image.trim().replace(/^\/+|\/+$/g, '');
 
-        // First try: Use the exact path from database
-        let publicUrl = await getPublicUrl(cleanPath);
-        let imageExists = await checkImageExists(publicUrl);
-
-        // Second try: Extract just the filename if path not found
-        if (!imageExists) {
-          const fileName = cleanPath.split('/').pop() || cleanPath;
-          publicUrl = await getPublicUrl(fileName);
-          imageExists = await checkImageExists(publicUrl);
-        }
-
-        // Third try: Search for similar filenames in storage
-        if (!imageExists) {
-          const similarUrl = await findSimilarImage(cleanPath);
-          if (similarUrl) {
-            publicUrl = similarUrl;
-            imageExists = true;
-          }
-        }
-
-        if (imageExists) {
+        // Get the filename from the stored URL or path
+        const fileName = member.image.split('/').pop();
+        
+        if (fileName) {
+          // Get public URL directly using the filename
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('team_images')
+            .getPublicUrl(fileName);
+            
           setImageUrl(publicUrl);
         } else {
-          console.error('Image not found for:', cleanPath);
+          console.error('Invalid image path:', member.image);
           setImageUrl("/placeholder.svg");
         }
       } catch (error) {
@@ -66,61 +54,6 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
 
     loadImageUrl();
   }, [member.image]);
-
-  // Helper function to get public URL from Supabase
-  const getPublicUrl = async (path: string) => {
-    const { data: { publicUrl } } = await supabase
-      .storage
-      .from('team_images')
-      .getPublicUrl(path);
-    return publicUrl;
-  };
-
-  // Helper function to check if image exists at URL
-  const checkImageExists = async (url: string) => {
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
-
-  // Helper function to find similar images in storage
-  const findSimilarImage = async (originalPath: string) => {
-    try {
-      // Extract the base name without extension
-      const baseName = originalPath.split('/').pop()?.split('.')[0] || '';
-      
-      // List files in the bucket
-      const { data: files } = await supabase
-        .storage
-        .from('team_images')
-        .list('', {
-          limit: 100,
-          sortBy: { column: 'name', order: 'asc' },
-        });
-
-      if (!files) return null;
-
-      // Find a file that contains the original base name
-      const matchingFile = files.find(file => 
-        file.name.includes(baseName) || 
-        baseName.includes(file.name.split('.')[0])
-      );
-
-      if (matchingFile) {
-        const { data: { publicUrl } } = await supabase
-          .storage
-          .from('team_images')
-          .getPublicUrl(matchingFile.name);
-        return publicUrl;
-      }
-    } catch (error) {
-      console.error('Error searching for similar image:', error);
-    }
-    return null;
-  };
 
   return (
     <div 

@@ -14,18 +14,17 @@ export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps
       imageUrl = member.image;
     } else {
       try {
-        // Check if the path starts with a slash and remove it if needed
-        const imagePath = member.image.startsWith('/') ? member.image.substring(1) : member.image;
+        // Extract just the filename from the path
+        const fileName = member.image.split('/').pop();
         
-        // For image paths with spaces, ensure they're properly encoded
-        const encodedPath = encodeURIComponent(imagePath).replace(/%2F/g, '/');
-        
-        const { data } = supabase.storage
-          .from('team_images')
-          .getPublicUrl(encodedPath);
-        
-        if (data && data.publicUrl) {
-          imageUrl = data.publicUrl;
+        if (fileName) {
+          const { data } = supabase.storage
+            .from('team_images')
+            .getPublicUrl(fileName);
+          
+          if (data && data.publicUrl) {
+            imageUrl = data.publicUrl;
+          }
         }
       } catch (error) {
         console.error('Error generating image URL:', error);

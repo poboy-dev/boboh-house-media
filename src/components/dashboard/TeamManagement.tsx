@@ -37,13 +37,19 @@ export const TeamManagement = () => {
     try {
       setUploading(true);
       
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${memberId}-${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
+      // Preserve the original filename but prepend with memberId for uniqueness
+      const originalFileName = file.name;
+      const fileName = `${memberId}-${originalFileName}`;
+      
+      // Clean up the filename to ensure it's valid
+      const cleanFileName = fileName.replace(/\s+/g, '_');
+      
       const { error: uploadError } = await supabase.storage
         .from('team_images')
-        .upload(filePath, file);
+        .upload(cleanFileName, file, {
+          cacheControl: '3600',
+          upsert: true // Replace if file already exists
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -51,7 +57,7 @@ export const TeamManagement = () => {
 
       const { data: { publicUrl } } = supabase.storage
         .from('team_images')
-        .getPublicUrl(filePath);
+        .getPublicUrl(cleanFileName);
 
       return publicUrl;
     } catch (error) {
