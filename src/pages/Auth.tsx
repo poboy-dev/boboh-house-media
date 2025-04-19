@@ -105,12 +105,37 @@ const Auth = () => {
                 password_input_placeholder: 'Votre mot de passe',
                 button_label: 'Se connecter',
                 loading_button_label: 'Connexion en cours ...',
+              },
+              sign_up: {
+                email_label: 'Email',
+                password_label: 'Mot de passe',
+                email_input_placeholder: 'Votre email',
+                password_input_placeholder: 'Votre mot de passe',
+                button_label: 'S\'inscrire',
+                loading_button_label: 'Inscription en cours ...',
+                link_text: 'Vous n\'avez pas de compte ? Inscrivez-vous',
               }
             }
           }}
           providers={[]}
           redirectTo={window.location.origin}
-          view="sign_in"
+          view="sign_up"
+          additionalData={{
+            first_name: '',
+            last_name: ''
+          }}
+          extendedSignUp={{
+            first_name: {
+              required: true,
+              label: 'Prénom',
+              placeholder: 'Votre prénom'
+            },
+            last_name: {
+              required: true,
+              label: 'Nom',
+              placeholder: 'Votre nom'
+            }
+          }}
         />
         <p className="text-sm text-center text-muted-foreground mt-6">
           Les inscriptions sont gérées par les administrateurs.
