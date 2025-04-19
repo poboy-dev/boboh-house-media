@@ -111,15 +111,23 @@ const Auth = () => {
                 password_label: 'Mot de passe',
                 email_input_placeholder: 'Votre email',
                 password_input_placeholder: 'Votre mot de passe',
-                button_label: 'S\'inscrire',
+                button_label: "S'inscrire",
                 loading_button_label: 'Inscription en cours ...',
-                link_text: 'Vous n\'avez pas de compte ? Inscrivez-vous',
+                link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
+                confirmation_text: 'Vérifiez vos emails pour confirmer votre inscription',
               }
             }
           }}
           providers={[]}
           redirectTo={window.location.origin}
           view="sign_up"
+          additionalData={{
+            username: {
+              displayName: "Nom d'utilisateur",
+              type: 'text',
+              required: true,
+            }
+          }}
         />
         <p className="text-sm text-center text-muted-foreground mt-6">
           Les inscriptions sont gérées par les administrateurs.
