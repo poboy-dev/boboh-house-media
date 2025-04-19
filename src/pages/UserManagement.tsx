@@ -41,12 +41,22 @@ export const UserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data: profiles, error } = await supabase
+      // Fetch both profiles and auth users data
+      const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*");
 
-      if (error) throw error;
-      return profiles;
+      if (profilesError) throw profilesError;
+
+      const { data: { users: authUsers }, error: usersError } = await supabase.auth.admin.listUsers();
+      
+      if (usersError) throw usersError;
+
+      // Combine the data
+      return profiles?.map(profile => ({
+        ...profile,
+        email: authUsers.find(user => user.id === profile.id)?.email || 'Email non disponible'
+      }));
     },
   });
 
@@ -166,7 +176,8 @@ export const UserManagement = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
+            <TableHead>Nom</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>ID</TableHead>
             <TableHead>Rôle</TableHead>
             <TableHead>Date de création</TableHead>
@@ -177,6 +188,7 @@ export const UserManagement = () => {
           {users?.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{`${user.first_name || ''} ${user.last_name || ''}`}</TableCell>
+              <TableCell>{user.email}</TableCell>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>
