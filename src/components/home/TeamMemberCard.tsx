@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TeamMember } from "@/types/team";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -9,10 +9,10 @@ interface TeamMemberCardProps {
 }
 
 export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index }) => {
-  const [imageUrl, setImageUrl] = React.useState("/placeholder.svg");
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [imageUrl, setImageUrl] = useState("/placeholder.svg");
+  const [isLoading, setIsLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadImageUrl = async () => {
       if (!member.image) {
         setIsLoading(false);
@@ -34,12 +34,17 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
         
         if (fileName) {
           // Get public URL directly using the filename
-          const { data: { publicUrl } } = supabase
+          const { data } = supabase
             .storage
             .from('team_images')
             .getPublicUrl(fileName);
             
-          setImageUrl(publicUrl);
+          if (data && data.publicUrl) {
+            setImageUrl(data.publicUrl);
+          } else {
+            console.error('Failed to get public URL for:', fileName);
+            setImageUrl("/placeholder.svg");
+          }
         } else {
           console.error('Invalid image path:', member.image);
           setImageUrl("/placeholder.svg");
@@ -70,7 +75,7 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
           <img 
             src={imageUrl}
             alt={member.name}
-            className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+            className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
             loading="lazy"
             onError={(e) => {
               console.error('Team member image failed to load:', imageUrl);
@@ -78,6 +83,7 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
               target.onerror = null;
               target.src = "/placeholder.svg";
             }}
+            onLoad={() => setIsLoading(false)}
           />
         </div>
         <h3 className="text-xl font-semibold mb-2">{member.name}</h3>

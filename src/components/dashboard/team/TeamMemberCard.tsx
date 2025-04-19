@@ -4,17 +4,29 @@ import { Card } from "@/components/ui/card";
 import { Pencil, Trash } from "lucide-react";
 import { TeamMemberCardProps } from "./types";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps) => {
-  let imageUrl = "/placeholder.svg";
-  
-  if (member.image) {
-    // Handle both direct URLs and storage references
-    if (member.image.startsWith('http')) {
-      imageUrl = member.image;
-    } else {
+  const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
+  const [imageLoading, setImageLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      if (!member.image) {
+        setImageUrl("/placeholder.svg");
+        setImageLoading(false);
+        return;
+      }
+
+      // Handle direct URLs
+      if (member.image.startsWith('http')) {
+        setImageUrl(member.image);
+        setImageLoading(false);
+        return;
+      }
+
       try {
-        // Extract just the filename from the path
+        // If the image is already a filename or path, extract just the filename
         const fileName = member.image.split('/').pop();
         
         if (fileName) {
@@ -23,14 +35,19 @@ export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps
             .getPublicUrl(fileName);
           
           if (data && data.publicUrl) {
-            imageUrl = data.publicUrl;
+            setImageUrl(data.publicUrl);
           }
         }
       } catch (error) {
         console.error('Error generating image URL:', error);
+        setImageUrl("/placeholder.svg");
+      } finally {
+        setImageLoading(false);
       }
-    }
-  }
+    };
+
+    loadImage();
+  }, [member.image]);
 
   return (
     <Card className="p-4">
@@ -59,14 +76,20 @@ export const TeamMemberCard = ({ member, onEdit, onDelete }: TeamMemberCardProps
         </div>
         
         <div className="relative w-32 h-32 mx-auto mb-4">
+          {imageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-full">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          )}
           <img
             src={imageUrl}
             alt={member.name}
-            className="w-full h-full object-cover rounded-full"
+            className={`w-full h-full object-cover rounded-full ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "/placeholder.svg";
             }}
+            onLoad={() => setImageLoading(false)}
           />
         </div>
         

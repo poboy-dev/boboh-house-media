@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TeamMember } from "@/types/team";
@@ -9,12 +9,21 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { TeamMemberForm } from "./team/TeamMemberForm";
 import { TeamMemberCard } from "./team/TeamMemberCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const TeamManagement = () => {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
 
   const { data: teamMembers, isLoading } = useQuery({
     queryKey: ["team-members"],
@@ -44,6 +53,8 @@ export const TeamManagement = () => {
       // Clean up the filename to ensure it's valid
       const cleanFileName = fileName.replace(/\s+/g, '_');
       
+      console.log("Uploading file:", cleanFileName);
+      
       const { error: uploadError } = await supabase.storage
         .from('team_images')
         .upload(cleanFileName, file, {
@@ -52,6 +63,7 @@ export const TeamManagement = () => {
         });
 
       if (uploadError) {
+        console.error("Upload error:", uploadError);
         throw uploadError;
       }
 
@@ -59,6 +71,7 @@ export const TeamManagement = () => {
         .from('team_images')
         .getPublicUrl(cleanFileName);
 
+      console.log("File uploaded successfully, public URL:", publicUrl);
       return publicUrl;
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -71,19 +84,27 @@ export const TeamManagement = () => {
 
   const createMutation = useMutation({
     mutationFn: async (newMember: Partial<TeamMember>) => {
+      console.log("Creating team member:", newMember);
+      
       const maxOrder = teamMembers?.reduce((max, member) => 
         Math.max(max, member.order_index || 0), 0) || 0;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("team_members")
         .insert({
           name: newMember.name || '',
           role: newMember.role || 'REDACTRICE',
           image: newMember.image,
-          order_index: maxOrder + 1
-        });
+          order_index: newMember.order_index || maxOrder + 1
+        })
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error in create mutation:", error);
+        throw error;
+      }
+      
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["team-members"] });
@@ -98,6 +119,8 @@ export const TeamManagement = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (member: Partial<TeamMember> & { id: string }) => {
+      console.log("Updating team member:", member);
+      
       const { error } = await supabase
         .from("team_members")
         .update({
@@ -108,7 +131,10 @@ export const TeamManagement = () => {
         })
         .eq("id", member.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error in update mutation:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["team-members"] });
@@ -123,13 +149,27 @@ export const TeamManagement = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log("Deleting team member with ID:", id);
+      
       const member = teamMembers?.find(m => m.id === id);
       if (member?.image) {
-        const fileName = member.image.split('/').pop();
-        if (fileName) {
-          await supabase.storage
-            .from('team_images')
-            .remove([fileName]);
+        try {
+          // Extract the filename from the image URL or path
+          const fileName = member.image.split('/').pop();
+          if (fileName) {
+            console.log("Deleting image file:", fileName);
+            const { error: deleteImageError } = await supabase.storage
+              .from('team_images')
+              .remove([fileName]);
+              
+            if (deleteImageError) {
+              console.error("Error deleting image:", deleteImageError);
+              // Continue with member deletion even if image deletion fails
+            }
+          }
+        } catch (imageError) {
+          console.error("Error handling image deletion:", imageError);
+          // Continue with member deletion even if image handling fails
         }
       }
 
@@ -138,15 +178,22 @@ export const TeamManagement = () => {
         .delete()
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error in delete mutation:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["team-members"] });
       toast.success("Membre supprimé avec succès");
+      setMemberToDelete(null);
+      setShowDeleteDialog(false);
     },
     onError: (error) => {
       console.error("Error deleting team member:", error);
       toast.error("Erreur lors de la suppression du membre");
+      setMemberToDelete(null);
+      setShowDeleteDialog(false);
     }
   });
 
@@ -167,15 +214,19 @@ export const TeamManagement = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce membre ?")) {
-      try {
-        await deleteMutation.mutateAsync(id);
-      } catch (error) {
-        console.error("Error deleting team member:", error);
-      }
+  const handleDeleteClick = useCallback((id: string) => {
+    setMemberToDelete(id);
+    setShowDeleteDialog(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!memberToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(memberToDelete);
+    } catch (error) {
+      console.error("Error deleting team member:", error);
     }
-  };
+  }, [memberToDelete, deleteMutation]);
 
   if (isLoading) {
     return (
@@ -205,10 +256,7 @@ export const TeamManagement = () => {
               onSave={handleCreate}
               onCancel={() => setIsCreating(false)}
               uploading={uploading}
-              onImageUpload={async (file, memberId) => {
-                const publicUrl = await handleImageUpload(file, memberId);
-                return publicUrl;
-              }}
+              onImageUpload={handleImageUpload}
             />
           </Card>
         )}
@@ -221,10 +269,7 @@ export const TeamManagement = () => {
                 onSave={handleUpdate}
                 onCancel={() => setEditingId(null)}
                 uploading={uploading}
-                onImageUpload={async (file, memberId) => {
-                  const publicUrl = await handleImageUpload(file, memberId);
-                  return publicUrl;
-                }}
+                onImageUpload={handleImageUpload}
               />
             </Card>
           ) : (
@@ -232,11 +277,32 @@ export const TeamManagement = () => {
               key={member.id}
               member={member}
               onEdit={(member) => setEditingId(member.id)}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick}
             />
           )
         ))}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmer la suppression</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>Êtes-vous sûr de vouloir supprimer ce membre de l'équipe?</p>
+            <p className="text-sm text-muted-foreground mt-2">Cette action est irréversible.</p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Supprimer
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
