@@ -17,16 +17,28 @@ export const UserManagement = () => {
 
       if (profilesError) throw profilesError;
 
-      // Fetch users data from auth.users
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+      // Fetch users data from auth.users using getUser for each profile
+      // This approach avoids using admin.listUsers which may require special permissions
+      if (!profiles || profiles.length === 0) return [];
 
-      if (authError) throw authError;
+      const usersWithEmails = await Promise.all(
+        profiles.map(async (profile) => {
+          // Get individual user data
+          const { data: userData, error: userError } = await supabase.auth.admin.getUserById(profile.id);
+          
+          let email = 'Email non disponible';
+          if (!userError && userData?.user) {
+            email = userData.user.email || 'Email non disponible';
+          }
+          
+          return {
+            ...profile,
+            email
+          };
+        })
+      );
 
-      // Combine profile and auth data
-      return profiles?.map(profile => ({
-        ...profile,
-        email: authData.users.find(user => user.id === profile.id)?.email || 'Email non disponible'
-      })) || [];
+      return usersWithEmails;
     },
   });
 
@@ -92,4 +104,3 @@ export const UserManagement = () => {
 };
 
 export default UserManagement;
-
