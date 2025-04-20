@@ -4,29 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserTable } from "@/components/users/UserTable";
 import { UserForm } from "@/components/users/UserForm";
-import { UserRole, Profile, UserWithEmail, AuthUser } from "@/types/user";
+import { UserRole } from "@/types/user";
 
 export const UserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
+      // Fetch profiles data from profiles table
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*");
 
       if (profilesError) throw profilesError;
 
-      const { data: { users: authUsers }, error: usersError } = await supabase.auth.admin.listUsers();
-      
-      if (usersError) throw usersError;
-
-      const typedProfiles = profiles as Profile[];
-      const typedAuthUsers = authUsers as AuthUser[];
-      
-      return typedProfiles.map((profile) => ({
-        ...profile,
-        email: typedAuthUsers.find(user => user.id === profile.id)?.email || 'Email non disponible'
-      })) as UserWithEmail[];
+      return profiles || [];
     },
   });
 
@@ -65,6 +56,7 @@ export const UserManagement = () => {
 
       if (error) throw error;
       toast.success("Rôle mis à jour avec succès");
+      refetch();
     } catch (error) {
       console.error("Error updating role:", error);
       toast.error("Erreur lors de la mise à jour du rôle");

@@ -15,15 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserRole } from "@/types/user";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 interface User {
   id: string;
   first_name: string | null;
   last_name: string | null;
   role: UserRole;
-  email: string;
   created_at: string;
 }
 
@@ -38,7 +35,6 @@ export const UserTable = ({ users, onRoleChange }: UserTableProps) => {
       <TableHeader>
         <TableRow>
           <TableHead>Nom</TableHead>
-          <TableHead>Email</TableHead>
           <TableHead>ID</TableHead>
           <TableHead>Rôle</TableHead>
           <TableHead>Date de création</TableHead>
@@ -49,7 +45,6 @@ export const UserTable = ({ users, onRoleChange }: UserTableProps) => {
         {users?.map((user) => (
           <TableRow key={user.id}>
             <TableCell>{`${user.first_name || ''} ${user.last_name || ''}`}</TableCell>
-            <TableCell>{user.email}</TableCell>
             <TableCell>{user.id}</TableCell>
             <TableCell>{user.role}</TableCell>
             <TableCell>
