@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,8 +64,11 @@ export const UserManagement = () => {
       
       if (usersError) throw usersError;
 
+      // Explicitly type the profiles data to avoid "never" type inference
+      const typedProfiles = profiles as Profile[];
+      
       // Combine the data with proper typing
-      return profiles?.map((profile: Profile) => ({
+      return typedProfiles.map((profile) => ({
         ...profile,
         email: authUsers.find(user => user.id === profile.id)?.email || 'Email non disponible'
       })) as UserWithEmail[];
