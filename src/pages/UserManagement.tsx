@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { UserTable } from "@/components/users/UserTable";
 import { UserForm } from "@/components/users/UserForm";
 import { UserRole } from "@/types/user";
-import type { Profile } from "@/types/user";
+import type { Profile, AuthUser } from "@/types/user";
 
 export const UserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
@@ -32,10 +32,11 @@ export const UserManagement = () => {
         
         // Explicit type assertion to avoid TypeScript error
         const typedProfiles = profiles as Profile[];
+        const typedAuthUsers = authUsers as AuthUser[];
         
         // Combine profile data with auth user data
         const usersWithEmails = typedProfiles.map(profile => {
-          const authUser = authUsers.find(user => user.id === profile.id);
+          const authUser = typedAuthUsers.find(user => user.id === profile.id);
           return {
             ...profile,
             email: authUser?.email || 'Email non disponible'
