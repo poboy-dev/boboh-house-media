@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +45,11 @@ interface UserWithEmail extends Profile {
   email: string;
 }
 
+interface AuthUser {
+  id: string;
+  email?: string;
+}
+
 export const UserManagement = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,11 +72,13 @@ export const UserManagement = () => {
 
       // Explicitly type the profiles data to avoid "never" type inference
       const typedProfiles = profiles as Profile[];
+      // Explicitly type the auth users data
+      const typedAuthUsers = authUsers as AuthUser[];
       
       // Combine the data with proper typing
       return typedProfiles.map((profile) => ({
         ...profile,
-        email: authUsers.find(user => user.id === profile.id)?.email || 'Email non disponible'
+        email: typedAuthUsers.find(user => user.id === profile.id)?.email || 'Email non disponible'
       })) as UserWithEmail[];
     },
   });
