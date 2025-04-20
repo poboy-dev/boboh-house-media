@@ -32,6 +32,19 @@ import { UserPlus } from "lucide-react";
 
 type UserRole = "user" | "author" | "admin";
 
+interface Profile {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserWithEmail extends Profile {
+  email: string;
+}
+
 export const UserManagement = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,11 +65,11 @@ export const UserManagement = () => {
       
       if (usersError) throw usersError;
 
-      // Combine the data
-      return profiles?.map(profile => ({
+      // Combine the data with proper typing
+      return profiles?.map((profile: Profile) => ({
         ...profile,
         email: authUsers.find(user => user.id === profile.id)?.email || 'Email non disponible'
-      }));
+      })) as UserWithEmail[];
     },
   });
 
