@@ -12,15 +12,7 @@ export const UserManagement = () => {
     queryKey: ["users"],
     queryFn: async () => {
       try {
-        // First, fetch user data from auth service
-        const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
-        
-        if (authError) {
-          console.error("Error fetching auth users:", authError);
-          throw authError;
-        }
-        
-        // Then fetch profiles from the profiles table
+        // Fetch profiles from the profiles table
         const { data: profiles, error: profilesError } = await supabase
           .from("profiles")
           .select("*");
@@ -30,21 +22,24 @@ export const UserManagement = () => {
           throw profilesError;
         }
         
+        if (!profiles || profiles.length === 0) {
+          return [];
+        }
+        
         // Explicit type assertion to avoid TypeScript error
         const typedProfiles = profiles as Profile[];
-        const typedAuthUsers = authUsers as AuthUser[];
         
-        // Combine profile data with auth user data
-        const usersWithEmails = typedProfiles.map(profile => {
-          const authUser = typedAuthUsers.find(user => user.id === profile.id);
+        // Since we can't use admin API, we'll just use the profile data
+        // and set placeholder emails where necessary
+        const usersWithProfiles = typedProfiles.map(profile => {
           return {
             ...profile,
-            email: authUser?.email || 'Email non disponible'
+            email: 'Contact administrator for email' // Placeholder since we can't access emails
           };
         });
         
-        console.log("Users with emails:", usersWithEmails);
-        return usersWithEmails;
+        console.log("Users with profiles:", usersWithProfiles);
+        return usersWithProfiles;
       } catch (error) {
         console.error("Error in queryFn:", error);
         throw error;
