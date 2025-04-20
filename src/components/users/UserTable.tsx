@@ -22,6 +22,7 @@ interface User {
   last_name: string | null;
   role: UserRole;
   created_at: string;
+  email: string;
 }
 
 interface UserTableProps {
@@ -35,6 +36,7 @@ export const UserTable = ({ users, onRoleChange }: UserTableProps) => {
       <TableHeader>
         <TableRow>
           <TableHead>Nom</TableHead>
+          <TableHead>Email</TableHead>
           <TableHead>ID</TableHead>
           <TableHead>Rôle</TableHead>
           <TableHead>Date de création</TableHead>
@@ -45,6 +47,7 @@ export const UserTable = ({ users, onRoleChange }: UserTableProps) => {
         {users?.map((user) => (
           <TableRow key={user.id}>
             <TableCell>{`${user.first_name || ''} ${user.last_name || ''}`}</TableCell>
+            <TableCell>{user.email}</TableCell>
             <TableCell>{user.id}</TableCell>
             <TableCell>{user.role}</TableCell>
             <TableCell>
@@ -71,3 +74,4 @@ export const UserTable = ({ users, onRoleChange }: UserTableProps) => {
     </Table>
   );
 };
+

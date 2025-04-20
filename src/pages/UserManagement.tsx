@@ -17,7 +17,16 @@ export const UserManagement = () => {
 
       if (profilesError) throw profilesError;
 
-      return profiles || [];
+      // Fetch users data from auth.users
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+
+      if (authError) throw authError;
+
+      // Combine profile and auth data
+      return profiles?.map(profile => ({
+        ...profile,
+        email: authData.users.find(user => user.id === profile.id)?.email || 'Email non disponible'
+      })) || [];
     },
   });
 
@@ -83,3 +92,4 @@ export const UserManagement = () => {
 };
 
 export default UserManagement;
+
