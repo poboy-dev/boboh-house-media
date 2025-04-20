@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { UserTable } from "@/components/users/UserTable";
 import { UserForm } from "@/components/users/UserForm";
 import { UserRole } from "@/types/user";
+import type { Profile } from "@/types/user";
 
 export const UserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
@@ -29,14 +30,17 @@ export const UserManagement = () => {
           throw profilesError;
         }
         
+        // Explicit type assertion to avoid TypeScript error
+        const typedProfiles = profiles as Profile[];
+        
         // Combine profile data with auth user data
-        const usersWithEmails = profiles?.map(profile => {
+        const usersWithEmails = typedProfiles.map(profile => {
           const authUser = authUsers.find(user => user.id === profile.id);
           return {
             ...profile,
             email: authUser?.email || 'Email non disponible'
           };
-        }) || [];
+        });
         
         console.log("Users with emails:", usersWithEmails);
         return usersWithEmails;
