@@ -74,4 +74,3 @@ export const UserTable = ({ users, onRoleChange }: UserTableProps) => {
     </Table>
   );
 };
-

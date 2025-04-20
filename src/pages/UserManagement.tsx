@@ -10,35 +10,40 @@ export const UserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      // Fetch profiles data from profiles table
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*");
-
-      if (profilesError) throw profilesError;
-
-      // Fetch users data from auth.users using getUser for each profile
-      // This approach avoids using admin.listUsers which may require special permissions
-      if (!profiles || profiles.length === 0) return [];
-
-      const usersWithEmails = await Promise.all(
-        profiles.map(async (profile) => {
-          // Get individual user data
-          const { data: userData, error: userError } = await supabase.auth.admin.getUserById(profile.id);
-          
-          let email = 'Email non disponible';
-          if (!userError && userData?.user) {
-            email = userData.user.email || 'Email non disponible';
-          }
-          
+      try {
+        // First, fetch user data from auth service
+        const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+        
+        if (authError) {
+          console.error("Error fetching auth users:", authError);
+          throw authError;
+        }
+        
+        // Then fetch profiles from the profiles table
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("*");
+        
+        if (profilesError) {
+          console.error("Error fetching profiles:", profilesError);
+          throw profilesError;
+        }
+        
+        // Combine profile data with auth user data
+        const usersWithEmails = profiles?.map(profile => {
+          const authUser = authUsers.find(user => user.id === profile.id);
           return {
             ...profile,
-            email
+            email: authUser?.email || 'Email non disponible'
           };
-        })
-      );
-
-      return usersWithEmails;
+        }) || [];
+        
+        console.log("Users with emails:", usersWithEmails);
+        return usersWithEmails;
+      } catch (error) {
+        console.error("Error in queryFn:", error);
+        throw error;
+      }
     },
   });
 
