@@ -1,3 +1,4 @@
+
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,11 +42,16 @@ export const ArticlesTable = () => {
       }
 
       try {
-        const { data, error } = await supabase
+        // Query all articles for admin users or only user's own articles
+        let query = supabase
           .from("articles")
           .select("*")
-          .eq("author", session.user.id)
           .order("created_at", { ascending: false });
+          
+        // If you want to limit to only the user's own articles, uncomment this:
+        // query = query.eq("author", session.user.id);
+
+        const { data, error } = await query;
 
         if (error) {
           console.error("Supabase error:", error);

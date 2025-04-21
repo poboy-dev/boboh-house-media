@@ -56,7 +56,8 @@ export const testTableAccess = async () => {
 
 export const getArticleById = async (id: string) => {
   console.log('Fetching article by ID:', id);
-  // Using articles_with_authors view to get the latest data including views and likes
+  
+  // Using a direct query to get the freshest data
   const { data, error } = await supabase
     .from('articles')
     .select('*')

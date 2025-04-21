@@ -17,10 +17,10 @@ export const LikeButton = ({ articleId, initialLikes }: LikeButtonProps) => {
   
   // Generate or get visitor ID for anonymous users
   const getVisitorId = () => {
-    let visitorId = window.sessionStorage.getItem('visitor_id');
+    let visitorId = localStorage.getItem('visitor_id');
     if (!visitorId) {
       visitorId = crypto.randomUUID();
-      window.sessionStorage.setItem('visitor_id', visitorId);
+      localStorage.setItem('visitor_id', visitorId);
     }
     return visitorId;
   };

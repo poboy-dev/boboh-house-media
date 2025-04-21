@@ -1,5 +1,5 @@
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { getArticleById } from '@/services/supabase';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +10,7 @@ import { LikeButton } from './LikeButton';
 
 export const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const { data: article, isLoading, error } = useQuery({
     queryKey: ['article', id],
@@ -22,6 +23,8 @@ export const ArticleDetail = () => {
     mutationFn: async (articleId: string) => {
       const { error } = await supabase.rpc('increment_article_views', { article_id: articleId });
       if (error) throw error;
+      // Invalidate article query to refresh data
+      queryClient.invalidateQueries({ queryKey: ['article', articleId] });
     }
   });
 
