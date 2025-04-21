@@ -1,8 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { getArticleById } from '@/services/supabase';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Comments } from "./comments/Comments";
+import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { LikeButton } from './LikeButton';
 
 export const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +16,21 @@ export const ArticleDetail = () => {
     queryFn: () => getArticleById(id!),
     enabled: !!id,
   });
+
+  // Mutation to increment view count
+  const incrementViewMutation = useMutation({
+    mutationFn: async (articleId: string) => {
+      const { error } = await supabase.rpc('increment_article_views', { article_id: articleId });
+      if (error) throw error;
+    }
+  });
+
+  // Increment view count when article loads
+  useEffect(() => {
+    if (article?.id) {
+      incrementViewMutation.mutate(article.id);
+    }
+  }, [article?.id]);
 
   if (isLoading) {
     return (
@@ -61,6 +80,7 @@ export const ArticleDetail = () => {
           <span className="text-sm text-muted-foreground">
             {article.views || 0} vues
           </span>
+          <LikeButton articleId={article.id} initialLikes={article.likes || 0} />
         </div>
       </div>
       <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
