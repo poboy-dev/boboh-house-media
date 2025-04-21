@@ -1,4 +1,3 @@
-
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,14 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ArticlesTableDisplay } from "./ArticlesTableDisplay";
+import { ArticlesSearchBar } from "./ArticlesSearchBar";
 import {
   Dialog,
   DialogContent,
@@ -141,70 +134,19 @@ export const ArticlesTable = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-        <Input
-          placeholder="Rechercher un article..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+      <ArticlesSearchBar 
+        searchTerm={searchTerm} 
+        onSearchChange={setSearchTerm} 
+      />
 
       {!filteredArticles?.length ? (
         <div className="text-center">Aucun article trouvé.</div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Titre</TableHead>
-              <TableHead>Catégorie</TableHead>
-              <TableHead>Vues</TableHead>
-              <TableHead>Likes</TableHead>
-              <TableHead>Date de création</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredArticles.map((article) => (
-              <TableRow key={article.id}>
-                <TableCell className="font-medium">{article.title}</TableCell>
-                <TableCell>{article.category}</TableCell>
-                <TableCell className="flex items-center gap-1">
-                  <Eye size={16} className="text-muted-foreground" />
-                  <span>{article.views || 0}</span>
-                </TableCell>
-                <TableCell className="flex items-center gap-1">
-                  <Heart size={16} className="text-muted-foreground" />
-                  <span>{article.likes || 0}</span>
-                </TableCell>
-                <TableCell>
-                  {new Date(article.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/edit-article/${article.id}`)}
-                    className="inline-flex items-center gap-2"
-                  >
-                    <Pencil size={16} />
-                    Modifier
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => deleteArticleMutation.mutate(article.id)}
-                    className="inline-flex items-center gap-2"
-                  >
-                    <Trash2 size={16} />
-                    Supprimer
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <ArticlesTableDisplay
+          articles={filteredArticles}
+          onEdit={id => navigate(`/edit-article/${id}`)}
+          onDelete={id => deleteArticleMutation.mutate(id)}
+        />
       )}
     </div>
   );
