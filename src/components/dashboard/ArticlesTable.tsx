@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Article } from "@/types/article";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Eye, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -160,6 +160,7 @@ export const ArticlesTable = () => {
               <TableHead>Titre</TableHead>
               <TableHead>Catégorie</TableHead>
               <TableHead>Vues</TableHead>
+              <TableHead>Likes</TableHead>
               <TableHead>Date de création</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -169,7 +170,14 @@ export const ArticlesTable = () => {
               <TableRow key={article.id}>
                 <TableCell className="font-medium">{article.title}</TableCell>
                 <TableCell>{article.category}</TableCell>
-                <TableCell>{article.views}</TableCell>
+                <TableCell className="flex items-center gap-1">
+                  <Eye size={16} className="text-muted-foreground" />
+                  <span>{article.views || 0}</span>
+                </TableCell>
+                <TableCell className="flex items-center gap-1">
+                  <Heart size={16} className="text-muted-foreground" />
+                  <span>{article.likes || 0}</span>
+                </TableCell>
                 <TableCell>
                   {new Date(article.created_at).toLocaleDateString()}
                 </TableCell>
