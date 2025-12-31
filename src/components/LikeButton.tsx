@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
@@ -25,19 +24,20 @@ export const LikeButton = ({ articleId, initialLikes }: LikeButtonProps) => {
     return visitorId;
   };
 
-  // Check if the user has already liked this article
+  // Check if the user has already liked this article using secure RPC
   useEffect(() => {
     const checkIfLiked = async () => {
       setIsLoading(true);
       try {
         const visitorId = getVisitorId();
         const { data, error } = await supabase
-          .from('article_likes')
-          .select('id')
-          .match({ article_id: articleId, user_id: visitorId });
+          .rpc('check_user_liked_article', { 
+            p_article_id: articleId, 
+            p_user_id: visitorId 
+          });
 
         if (error) throw error;
-        setIsLiked(data && data.length > 0);
+        setIsLiked(data === true);
       } catch (error) {
         console.error('Error checking like status:', error);
       } finally {
@@ -58,26 +58,21 @@ export const LikeButton = ({ articleId, initialLikes }: LikeButtonProps) => {
     const visitorId = getVisitorId();
     
     try {
-      if (isLiked) {
-        const { error } = await supabase
-          .from('article_likes')
-          .delete()
-          .match({ article_id: articleId, user_id: visitorId });
+      // Use secure RPC function to toggle like
+      const { data: nowLiked, error } = await supabase
+        .rpc('toggle_article_like', { 
+          p_article_id: articleId, 
+          p_user_id: visitorId 
+        });
 
-        if (error) throw error;
-        setLikes(prev => prev - 1);
-        setIsLiked(false);
-      } else {
-        const { error } = await supabase
-          .from('article_likes')
-          .insert({
-            article_id: articleId,
-            user_id: visitorId
-          });
-
-        if (error) throw error;
+      if (error) throw error;
+      
+      if (nowLiked) {
         setLikes(prev => prev + 1);
         setIsLiked(true);
+      } else {
+        setLikes(prev => prev - 1);
+        setIsLiked(false);
       }
     } catch (error) {
       console.error('Error toggling like:', error);
