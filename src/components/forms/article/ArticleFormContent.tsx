@@ -1,5 +1,5 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { UseFormReturn } from "react-hook-form";
 import { ArticleFormSchema } from "./schema";
 
@@ -16,10 +16,10 @@ export const ArticleFormContent = ({ form }: ArticleFormContentProps) => {
         <FormItem>
           <FormLabel>Contenu</FormLabel>
           <FormControl>
-            <Textarea
-              placeholder="Contenu de l'article"
-              className="min-h-[300px]"
-              {...field}
+            <RichTextEditor
+              value={field.value || ""}
+              onChange={field.onChange}
+              placeholder="Écrivez votre article ici..."
             />
           </FormControl>
           <FormMessage />
