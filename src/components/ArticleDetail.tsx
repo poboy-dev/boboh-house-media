@@ -88,9 +88,10 @@ export const ArticleDetail = () => {
       </div>
       <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
       <p className="text-xl text-muted-foreground mb-8">{article.description}</p>
-      <div className="prose prose-lg max-w-none">
-        {article.content}
-      </div>
+      <div 
+        className="prose prose-lg max-w-none article-content"
+        dangerouslySetInnerHTML={{ __html: article.content || '' }}
+      />
       <Comments articleId={article.id} />
     </article>
   );
