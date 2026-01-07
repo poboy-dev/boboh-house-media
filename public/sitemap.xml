@@ -3,7 +3,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://boboh-house-media.com/</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,42 +11,42 @@
   <!-- Static Pages -->
   <url>
     <loc>https://boboh-house-media.com/services</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/portfolio</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/about</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/contact</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/bobohgeek</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/bh-association</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -67,6 +67,14 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Category: gospel -->
+  <url>
+    <loc>https://boboh-house-media.com/category/gospel</loc>
+    <lastmod>2026-01-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Category: music -->
   <url>
     <loc>https://boboh-house-media.com/category/music</loc>
@@ -83,9 +91,9 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Article: 29baffde-ce5f-4145-a4e4-1d79a61e8126 -->
+  <!-- Article: b7bdfdf9-740d-4267-95a7-835b556fc379 -->
   <url>
-    <loc>https://boboh-house-media.com/articles/29baffde-ce5f-4145-a4e4-1d79a61e8126</loc>
+    <loc>https://boboh-house-media.com/articles/b7bdfdf9-740d-4267-95a7-835b556fc379</loc>
     <lastmod>2026-01-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
