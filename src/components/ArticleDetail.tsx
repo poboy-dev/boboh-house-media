@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { getArticleById } from '@/services/supabase';
@@ -7,7 +6,8 @@ import { Comments } from "./comments/Comments";
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { LikeButton } from './LikeButton';
-
+import { SEOHead } from './SEOHead';
+import { ShareButton } from './ShareButton';
 export const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
@@ -69,6 +69,11 @@ export const ArticleDetail = () => {
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-4xl">
+      <SEOHead 
+        title={article.title}
+        description={article.description || ''}
+        image={article.image}
+      />
       <img
         src={article.image}
         alt={article.title}
@@ -84,6 +89,7 @@ export const ArticleDetail = () => {
             {article.views || 0} vues
           </span>
           <LikeButton articleId={article.id} initialLikes={article.likes || 0} />
+          <ShareButton title={article.title} description={article.description || ''} />
         </div>
       </div>
       <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
