@@ -12,6 +12,7 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import BobohGeek from "@/pages/BobohGeek";
 import BHAssociation from "@/pages/BHAssociation";
+import NotFound from "@/pages/NotFound";
 import { ArticlesTable } from "@/components/dashboard/ArticlesTable";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -93,6 +94,7 @@ function App() {
               <Route path="/bh-association" element={<BHAssociation />} />
               <Route path="/articles/:id" element={<ArticleDetail />} />
               <Route path="/category/:slug" element={<CategoryArticles />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
             <Footer />
           </div>
