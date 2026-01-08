@@ -24,6 +24,7 @@ export const ArticlesTable = () => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [isNewArticleDialogOpen, setIsNewArticleDialogOpen] = useState(false);
+  const [editArticle, setEditArticle] = useState<Article | null>(null);
 
   const { data: articles, isLoading, error } = useQuery({
     queryKey: ["userArticles", session?.user?.id],
@@ -109,7 +110,17 @@ export const ArticlesTable = () => {
 
   const handleFormSuccess = () => {
     setIsNewArticleDialogOpen(false);
+    setEditArticle(null);
     queryClient.invalidateQueries({ queryKey: ["userArticles"] });
+  };
+
+  const handleEdit = (id: string) => {
+    const articleToEdit = articles?.find(a => a.id === id) || null;
+    setEditArticle(articleToEdit);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditArticle(null);
   };
 
   return (
@@ -144,10 +155,21 @@ export const ArticlesTable = () => {
       ) : (
         <ArticlesTableDisplay
           articles={filteredArticles}
-          onEdit={id => navigate(`/edit-article/${id}`)}
+          onEdit={handleEdit}
           onDelete={id => deleteArticleMutation.mutate(id)}
         />
       )}
+      {/* Edit Article Modal */}
+      <Dialog open={!!editArticle} onOpenChange={open => !open && handleEditDialogClose()}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Modifier l'article</DialogTitle>
+          </DialogHeader>
+          {editArticle && (
+            <ArticleForm initialData={editArticle} onSuccess={handleFormSuccess} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
