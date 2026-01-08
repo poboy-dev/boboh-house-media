@@ -89,7 +89,7 @@ export const ArticleDetail = () => {
             {article.views || 0} vues
           </span>
           <LikeButton articleId={article.id} initialLikes={article.likes || 0} />
-          <ShareButton title={article.title} description={article.description || ''} />
+          <ShareButton title={article.title} description={article.description || ''} articleId={article.id} />
         </div>
       </div>
       <h1 className="text-4xl font-bold mb-4">{article.title}</h1>

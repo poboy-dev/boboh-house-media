@@ -13,21 +13,28 @@ interface ShareButtonProps {
   title: string;
   description?: string;
   url?: string;
+  articleId?: string;
 }
 
 export const ShareButton = ({ 
   title, 
   description = '', 
-  url = typeof window !== 'undefined' ? window.location.href : '' 
+  url = typeof window !== 'undefined' ? window.location.href : '',
+  articleId
 }: ShareButtonProps) => {
   const [copied, setCopied] = useState(false);
+
+  // Use Edge Function URL for social sharing if articleId is provided
+  const ogUrl = articleId 
+    ? `https://yxiocwtfejvgtupqtcnx.supabase.co/functions/v1/og-image?id=${articleId}`
+    : url;
 
   const shareText = `${title}${description ? ` - ${description}` : ''}`;
 
   const shareLinks = {
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${url}`)}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`,
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${ogUrl}`)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}&quote=${encodeURIComponent(title)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(ogUrl)}`,
   };
 
   const handleShare = (platform: keyof typeof shareLinks) => {
