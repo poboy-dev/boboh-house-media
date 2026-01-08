@@ -2,6 +2,7 @@ import { ArticleForm } from "@/components/ArticleForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Article } from "@/types/article";
+import { useParams } from "react-router-dom";
 
 const EditArticle = () => {
   const { id } = useParams();
