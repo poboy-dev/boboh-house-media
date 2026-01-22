@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SITE_URL = "https://boboh-house-media.com";
+const SITE_URL = "https://boboh-house-media.lovable.app";
 const SITE_NAME = "BOBOH HOUSE MEDIA";
 
 serve(async (req) => {
