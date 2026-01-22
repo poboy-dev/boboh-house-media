@@ -3,7 +3,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://boboh-house-media.com/</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,42 +11,42 @@
   <!-- Static Pages -->
   <url>
     <loc>https://boboh-house-media.com/services</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/portfolio</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/about</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/contact</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/bobohgeek</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/bh-association</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -75,6 +75,14 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Category: interview -->
+  <url>
+    <loc>https://boboh-house-media.com/category/interview</loc>
+    <lastmod>2026-01-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Category: music -->
   <url>
     <loc>https://boboh-house-media.com/category/music</loc>
@@ -91,18 +99,50 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Article: b7bdfdf9-740d-4267-95a7-835b556fc379 -->
+  <!-- Article: d8d3ef3c-908f-4cec-9211-80a8522ac02d -->
   <url>
-    <loc>https://boboh-house-media.com/articles/b7bdfdf9-740d-4267-95a7-835b556fc379</loc>
-    <lastmod>2026-01-06</lastmod>
+    <loc>https://boboh-house-media.com/articles/d8d3ef3c-908f-4cec-9211-80a8522ac02d</loc>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- Article: ab3d5954-b877-48a7-99b9-092aaca4a451 -->
+  <!-- Article: 1ef3d47d-963d-4c41-9e1c-417c732cf59d -->
   <url>
-    <loc>https://boboh-house-media.com/articles/ab3d5954-b877-48a7-99b9-092aaca4a451</loc>
-    <lastmod>2025-12-31</lastmod>
+    <loc>https://boboh-house-media.com/articles/1ef3d47d-963d-4c41-9e1c-417c732cf59d</loc>
+    <lastmod>2026-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 1cdaaef7-03d4-4d95-be73-a7cb756a9c3a -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/1cdaaef7-03d4-4d95-be73-a7cb756a9c3a</loc>
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 241b0292-05a3-4bec-8b08-0ae9188b95c4 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/241b0292-05a3-4bec-8b08-0ae9188b95c4</loc>
+    <lastmod>2026-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 4dc6f1d8-3189-4216-851d-20e79ad7f5e7 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/4dc6f1d8-3189-4216-851d-20e79ad7f5e7</loc>
+    <lastmod>2026-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: b7bdfdf9-740d-4267-95a7-835b556fc379 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/b7bdfdf9-740d-4267-95a7-835b556fc379</loc>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

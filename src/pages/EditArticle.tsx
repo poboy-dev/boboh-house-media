@@ -1,4 +1,5 @@
 import { ArticleForm } from "@/components/ArticleForm";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Article } from "@/types/article";
@@ -36,10 +37,24 @@ const EditArticle = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Modifier l'article</h1>
-      <ArticleForm initialData={article} />
-    </div>
+    <HelmetProvider>
+      <Helmet>
+        <title>{article.title} | Boboh House</title>
+        <meta name="description" content={article.description} />
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={article.description} />
+        <meta property="og:image" content={article.image} />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={article.description} />
+        <meta name="twitter:image" content={article.image} />
+      </Helmet>
+      <div className="container mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-6">Modifier l'article</h1>
+        <ArticleForm initialData={article} />
+      </div>
+    </HelmetProvider>
   );
 };
 

@@ -16,16 +16,16 @@ interface ShareButtonProps {
   articleId?: string;
 }
 
-export const ShareButton = ({ 
-  title, 
-  description = '', 
+export const ShareButton = ({
+  title,
+  description = '',
   url = typeof window !== 'undefined' ? window.location.href : '',
   articleId
 }: ShareButtonProps) => {
   const [copied, setCopied] = useState(false);
 
   // Use Edge Function URL for social sharing if articleId is provided
-  const ogUrl = articleId 
+  const ogUrl = articleId
     ? `https://yxiocwtfejvgtupqtcnx.supabase.co/functions/v1/og-image?id=${articleId}`
     : url;
 
@@ -43,7 +43,7 @@ export const ShareButton = ({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(ogUrl);
       setCopied(true);
       toast.success('Lien copié !');
       setTimeout(() => setCopied(false), 2000);
