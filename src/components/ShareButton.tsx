@@ -24,17 +24,23 @@ export const ShareButton = ({
 }: ShareButtonProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Use Edge Function URL for social sharing if articleId is provided
-  const ogUrl = articleId
-    ? `https://yxiocwtfejvgtupqtcnx.supabase.co/functions/v1/og-image?id=${articleId}`
-    : url;
+  // Share the real article URL (works with custom domains and avoids showing Edge Function HTML in apps like WhatsApp)
+  const shareUrl = (() => {
+    if (!articleId) return url;
+    try {
+      const origin = new URL(url).origin;
+      return `${origin}/articles/${articleId}`;
+    } catch {
+      return url;
+    }
+  })();
 
   const shareText = `${title}${description ? ` - ${description}` : ''}`;
 
   const shareLinks = {
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${ogUrl}`)}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}&quote=${encodeURIComponent(title)}`,
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(ogUrl)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
   };
 
   const handleShare = (platform: keyof typeof shareLinks) => {
@@ -43,7 +49,7 @@ export const ShareButton = ({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(ogUrl);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       toast.success('Lien copié !');
       setTimeout(() => setCopied(false), 2000);
