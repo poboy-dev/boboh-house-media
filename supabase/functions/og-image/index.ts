@@ -66,6 +66,13 @@ serve(async (req) => {
 
     // Build the canonical URL for the article
     const articleUrl = `${SITE_URL}/articles/${article.id}`;
+
+    // Serve OG HTML to social crawlers, and a true HTTP redirect to human browsers.
+    // This avoids users seeing a raw HTML page in in-app browsers that block/limit JS.
+    const userAgent = (req.headers.get('user-agent') || '').toLowerCase();
+    const isSocialCrawler = /(facebookexternalhit|facebot|twitterbot|whatsapp|telegrambot|slackbot|discordbot|linkedinbot|pinterest|googlebot|bingbot|embedly|crawler|bot)/i.test(
+      userAgent
+    );
     
     // Ensure image URL is absolute
     let imageUrl = article.image || `${SITE_URL}/og-image.png`;
@@ -78,6 +85,19 @@ serve(async (req) => {
     const description = article.description 
       ? escapeHtml(article.description.substring(0, 160) + (article.description.length > 160 ? '...' : ''))
       : `Lisez cet article sur ${SITE_NAME}`;
+
+    // Human users: fast redirect (no HTML rendered)
+    if (!isSocialCrawler) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: articleUrl,
+          'Cache-Control': 'no-store',
+          Vary: 'User-Agent',
+        },
+      });
+    }
 
     // Generate HTML with Open Graph meta tags
     // Social crawlers (Facebook, WhatsApp, Twitter) don't execute JavaScript,
@@ -169,6 +189,7 @@ serve(async (req) => {
         ...corsHeaders,
         'Content-Type': 'text/html; charset=utf-8',
         'Cache-Control': 'public, max-age=3600',
+        Vary: 'User-Agent',
       },
     });
 
