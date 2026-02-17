@@ -69,6 +69,7 @@ const Services = () => {
                 src={service.image || "/placeholder.svg"}
                 alt={service.title}
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                loading="lazy"
               />
             </div>
             <div className="p-6">

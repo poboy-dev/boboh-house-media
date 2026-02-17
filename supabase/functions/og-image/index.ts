@@ -1,3 +1,8 @@
+// @ts-nocheck — This is a Deno-based Supabase Edge Function.
+// URL imports and the Deno global are valid at runtime but not
+// recognized by the Node/TS language server. Install the "Deno"
+// VS Code extension (denoland.vscode-deno) for full IDE support.
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -73,7 +78,7 @@ serve(async (req) => {
     const isSocialCrawler = /(facebookexternalhit|facebot|twitterbot|whatsapp|telegrambot|slackbot|discordbot|linkedinbot|pinterest|googlebot|bingbot|embedly|crawler|bot)/i.test(
       userAgent
     );
-    
+
     // Ensure image URL is absolute
     let imageUrl = article.image || `${SITE_URL}/og-image.png`;
     if (imageUrl && !imageUrl.startsWith('http')) {
@@ -82,7 +87,7 @@ serve(async (req) => {
 
     // Escape and truncate for meta tags
     const safeTitle = escapeHtml(article.title);
-    const description = article.description 
+    const description = article.description
       ? escapeHtml(article.description.substring(0, 160) + (article.description.length > 160 ? '...' : ''))
       : `Lisez cet article sur ${SITE_NAME}`;
 
@@ -115,7 +120,7 @@ serve(async (req) => {
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="article">
-  <meta property="og:url" content="${articleUrl}">
+  <meta property="og:url" content="${req.url}">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${description}">
   <meta property="og:image" content="${imageUrl}">
@@ -126,7 +131,7 @@ serve(async (req) => {
   
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="${articleUrl}">
+  <meta name="twitter:url" content="${req.url}">
   <meta name="twitter:title" content="${safeTitle}">
   <meta name="twitter:description" content="${description}">
   <meta name="twitter:image" content="${imageUrl}">
@@ -195,7 +200,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in og-image function:', error);
-    return new Response('Internal server error', { 
+    return new Response('Internal server error', {
       status: 500,
       headers: corsHeaders,
     });

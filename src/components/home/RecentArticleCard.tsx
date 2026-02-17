@@ -16,6 +16,7 @@ export const RecentArticleCard: React.FC<RecentArticleCardProps> = ({ article })
           src={article.image || "/placeholder.svg"}
           alt={article.title}
           className="w-full h-full object-cover"
+          loading="lazy"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = "/placeholder.svg";

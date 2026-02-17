@@ -71,31 +71,33 @@ function App() {
         <BrowserRouter>
           <div className="min-h-screen flex flex-col">
             <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route 
-                path="/dashboard/*" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="articles" element={<ArticlesTable />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="about" element={<About />} />
-              </Route>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/bobohgeek" element={<BobohGeek />} />
-              <Route path="/bh-association" element={<BHAssociation />} />
-              <Route path="/articles/:id" element={<ArticleDetail />} />
-              <Route path="/category/:slug" element={<CategoryArticles />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route 
+                  path="/dashboard/*" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="articles" element={<ArticlesTable />} />
+                  <Route path="users" element={<UserManagement />} />
+                  <Route path="about" element={<About />} />
+                </Route>
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/bobohgeek" element={<BobohGeek />} />
+                <Route path="/bh-association" element={<BHAssociation />} />
+                <Route path="/articles/:id" element={<ArticleDetail />} />
+                <Route path="/category/:slug" element={<CategoryArticles />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
             <Footer />
           </div>
         </BrowserRouter>

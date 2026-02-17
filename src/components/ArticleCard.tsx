@@ -18,6 +18,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
               src={article.image}
               alt={article.title}
               className="w-full h-full object-cover"
+              loading="lazy"
               onError={(e) => {
                 console.error('Image failed to load:', article.image);
                 const target = e.target as HTMLImageElement;

@@ -13,6 +13,7 @@ Lors du partage d'articles sur les réseaux sociaux (WhatsApp, Facebook, Twitter
 Les plateformes sociales (WhatsApp, Facebook, etc.) utilisent des **robots d'exploration (crawlers)** pour extraire les métadonnées Open Graph d'une URL. Ces robots :
 - N'exécutent **pas** le JavaScript
 - Lisent uniquement le HTML statique et les balises `<meta>`
+- **Attention** : Si la balise `og:url` pointe vers l'article final (SPA), le robot va ignorer les balises fournies et scanner la page de destination (qui n'a pas les métadonnées). Il faut que `og:url` reste sur l'URL de la fonction Edge.
 
 Cependant, les **utilisateurs humains** qui cliquent sur le lien :
 - Utilisent des navigateurs qui peuvent exécuter JavaScript
