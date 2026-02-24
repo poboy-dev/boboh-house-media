@@ -61,8 +61,7 @@ export const HeroSection: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="text-lg sm:text-xl md:text-2xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed"
         >
-          Promouvoir la culture et la consommation locale à travers
-          la production audiovisuelle professionnelle.
+          Promouvoir la culture et la consommation locale.
         </motion.p>
 
         {/* CTA Buttons */}
