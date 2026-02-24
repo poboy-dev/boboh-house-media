@@ -113,7 +113,7 @@ export const DashboardSidebar = () => {
       <Sidebar className="sidebar-background shadow-lg">
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel className="text-black opacity-90">Navigation</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-white opacity-90">Navigation</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => (
@@ -123,7 +123,7 @@ export const DashboardSidebar = () => {
                         navigate(item.path);
                         if (isMobile) toggleSidebar();
                       }}
-                      className="flex items-center gap-2 text-black hover:bg-white/10"
+                      className="flex items-center gap-2 text-white/90 hover:bg-white/10"
                       isActive={location.pathname === item.path}
                     >
                       <item.icon className="h-4 w-4" />

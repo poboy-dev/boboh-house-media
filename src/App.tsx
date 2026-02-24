@@ -21,6 +21,7 @@ import { useSession, useSupabaseClient, SessionContextProvider } from "@supabase
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import CategoryArticles from "@/pages/CategoryArticles";
+import { ThemeProvider } from "next-themes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,14 +37,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const supabaseClient = useSupabaseClient();
-  
+
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
       console.log("Current session in ProtectedRoute:", currentSession);
       setIsLoading(false);
     };
-    
+
     checkSession();
   }, [supabaseClient]);
 
@@ -54,7 +55,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  
+
   if (!session) {
     console.log("No session in ProtectedRoute, redirecting to auth");
     return <Navigate to="/auth" replace />;
@@ -67,42 +68,44 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionContextProvider supabaseClient={supabase}>
-        <BrowserRouter>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route 
-                  path="/dashboard/*" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="articles" element={<ArticlesTable />} />
-                  <Route path="users" element={<UserManagement />} />
-                  <Route path="about" element={<About />} />
-                </Route>
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/bobohgeek" element={<BobohGeek />} />
-                <Route path="/bh-association" element={<BHAssociation />} />
-                <Route path="/articles/:id" element={<ArticleDetail />} />
-                <Route path="/category/:slug" element={<CategoryArticles />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </BrowserRouter>
-        <Toaster />
-      </SessionContextProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <SessionContextProvider supabaseClient={supabase}>
+          <BrowserRouter>
+            <div className="min-h-screen flex flex-col">
+              <Navbar />
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route
+                    path="/dashboard/*"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route path="articles" element={<ArticlesTable />} />
+                    <Route path="users" element={<UserManagement />} />
+                    <Route path="about" element={<About />} />
+                  </Route>
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/bobohgeek" element={<BobohGeek />} />
+                  <Route path="/bh-association" element={<BHAssociation />} />
+                  <Route path="/articles/:id" element={<ArticleDetail />} />
+                  <Route path="/category/:slug" element={<CategoryArticles />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </BrowserRouter>
+          <Toaster />
+        </SessionContextProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

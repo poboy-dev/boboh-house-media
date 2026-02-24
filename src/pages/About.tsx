@@ -8,16 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Save, Plus, Trash } from "lucide-react";
+import { Pencil, Save, Plus, Trash, Target, Heart, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 const About = () => {
   const session = useSession();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<{[key: string]: any}>({});
+  const [editForm, setEditForm] = useState<{ [key: string]: any }>({});
   const [newTimelineItem, setNewTimelineItem] = useState<Partial<TimelineItem>>({});
 
   const { data: aboutContent, isLoading } = useQuery({
@@ -26,12 +28,12 @@ const About = () => {
       const { data, error } = await supabase
         .from("about_content")
         .select("*");
-      
+
       if (error) {
         console.error("Error fetching about content:", error);
         throw error;
       }
-      
+
       return data as AboutContent[];
     }
   });
@@ -122,155 +124,153 @@ const About = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <LoadingSpinner size={48} />
       </div>
     );
   }
 
+  const valueCards = [
+    {
+      icon: Target,
+      title: "Notre Mission",
+      section: "mission",
+      content: missionContent,
+      gradient: "from-secondary/20 to-secondary/5",
+      iconColor: "text-secondary",
+    },
+    {
+      icon: Heart,
+      title: "Nos Valeurs",
+      section: "values",
+      content: valuesContent,
+      gradient: "from-primary/20 to-primary/5",
+      iconColor: "text-primary",
+    },
+    {
+      icon: Lightbulb,
+      title: "Notre Vision",
+      section: "vision",
+      content: visionContent,
+      gradient: "from-secondary/20 to-primary/5",
+      iconColor: "text-secondary",
+    },
+  ];
+
   return (
-    <div className="min-h-screen pt-24 bg-gray-50">
-      {session?.user && (
-        <div className="container mx-auto px-4 mb-8">
-          <Button 
-            onClick={() => setIsEditing(!isEditing)}
-            className="flex items-center gap-2"
+    <div className="min-h-screen pt-16">
+      {/* Hero Banner */}
+      <section className="relative py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 right-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-1/4 left-10 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "3s" }} />
+        </div>
+
+        <div className="container mx-auto px-4 text-center relative z-10">
+          {session?.user && (
+            <div className="mb-8">
+              <Button
+                onClick={() => setIsEditing(!isEditing)}
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                {isEditing ? "Mode lecture" : "Mode édition"}
+              </Button>
+            </div>
+          )}
+          <motion.h1
+            className="text-4xl md:text-5xl font-bold mb-6 font-heading"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <Pencil className="h-4 w-4" />
-            {isEditing ? "Mode lecture" : "Mode édition"}
-          </Button>
-        </div>
-      )}
-
-      <section className="bg-white py-16 text-center">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">Notre Histoire</h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Notre Histoire
+          </motion.h1>
+          <motion.p
+            className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             Boboh House Media est né d'une passion pour la culture camerounaise et d'une vision audacieuse : "Promouvoir la culture et la consommation locale".
-          </p>
+          </motion.p>
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="p-6 hover:shadow-xl transition-shadow duration-300">
-            <div className="text-[#E74C3C] text-3xl mb-4">
-              <i className="fas fa-bullseye"></i>
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Notre Mission</h3>
-            {isEditing && editingSection === "mission" ? (
-              <div className="space-y-4">
-                <Textarea
-                  value={editForm.text || ""}
-                  onChange={(e) => setEditForm({ text: e.target.value })}
-                  className="w-full"
-                />
-                <Button 
-                  onClick={() => handleSave("mission")}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Sauvegarder
-                </Button>
-              </div>
-            ) : (
-              <div className="relative">
-                <p className="text-gray-600">{missionContent}</p>
-                {isEditing && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute top-0 right-0"
-                    onClick={() => handleEdit("mission", { text: missionContent })}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            )}
-          </Card>
+      {/* Mission / Values / Vision */}
+      <section className="py-20 bg-background relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
 
-          <Card className="p-6 hover:shadow-xl transition-shadow duration-300">
-            <div className="text-[#E74C3C] text-3xl mb-4">
-              <i className="fas fa-heart"></i>
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Nos Valeurs</h3>
-            {isEditing && editingSection === "values" ? (
-              <div className="space-y-4">
-                <Textarea
-                  value={editForm.text || ""}
-                  onChange={(e) => setEditForm({ text: e.target.value })}
-                  className="w-full"
-                />
-                <Button 
-                  onClick={() => handleSave("values")}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Sauvegarder
-                </Button>
-              </div>
-            ) : (
-              <div className="relative">
-                <p className="text-gray-600">{valuesContent}</p>
-                {isEditing && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute top-0 right-0"
-                    onClick={() => handleEdit("values", { text: valuesContent })}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            )}
-          </Card>
+        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+          {valueCards.map((card, index) => (
+            <motion.div
+              key={card.section}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+            >
+              <div className="glass-card p-8 h-full">
+                {/* Icon */}
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-6`}>
+                  <card.icon className={`w-7 h-7 ${card.iconColor}`} />
+                </div>
 
-          <Card className="p-6 hover:shadow-xl transition-shadow duration-300">
-            <div className="text-[#E74C3C] text-3xl mb-4">
-              <i className="fas fa-lightbulb"></i>
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Notre Vision</h3>
-            {isEditing && editingSection === "vision" ? (
-              <div className="space-y-4">
-                <Textarea
-                  value={editForm.text || ""}
-                  onChange={(e) => setEditForm({ text: e.target.value })}
-                  className="w-full"
-                />
-                <Button 
-                  onClick={() => handleSave("vision")}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Sauvegarder
-                </Button>
-              </div>
-            ) : (
-              <div className="relative">
-                <p className="text-gray-600">{visionContent}</p>
-                {isEditing && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute top-0 right-0"
-                    onClick={() => handleEdit("vision", { text: visionContent })}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                <h3 className="text-xl font-semibold mb-3 font-heading">{card.title}</h3>
+
+                {isEditing && editingSection === card.section ? (
+                  <div className="space-y-4">
+                    <Textarea
+                      value={editForm.text || ""}
+                      onChange={(e) => setEditForm({ text: e.target.value })}
+                      className="w-full"
+                    />
+                    <Button
+                      onClick={() => handleSave(card.section)}
+                      className="w-full flex items-center justify-center gap-2"
+                    >
+                      <Save className="h-4 w-4" />
+                      Sauvegarder
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <p className="text-muted-foreground leading-relaxed">{card.content}</p>
+                    {isEditing && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute top-0 right-0"
+                        onClick={() => handleEdit(card.section, { text: card.content })}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </Card>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      {/* Timeline */}
+      <section className="py-20 bg-muted/30 relative overflow-hidden">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Notre Parcours</h2>
+          <motion.div
+            className="section-header"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-heading">Notre Parcours</h2>
+            <div className="section-divider" />
+          </motion.div>
+
           {isEditing && (
-            <div className="max-w-3xl mx-auto mb-8 p-4 border rounded-lg bg-gray-50">
-              <h3 className="font-semibold mb-4">Ajouter une étape</h3>
+            <div className="max-w-3xl mx-auto mb-12 p-6 rounded-2xl bg-white dark:bg-zinc-900 dark:border dark:border-white/10 shadow-md">
+              <h3 className="font-semibold mb-4 font-heading">Ajouter une étape</h3>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="year">Année</Label>
@@ -296,7 +296,7 @@ const About = () => {
                     onChange={(e) => setNewTimelineItem({ ...newTimelineItem, description: e.target.value })}
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={handleAddTimelineItem}
                   className="w-full flex items-center justify-center gap-2"
                 >
@@ -306,27 +306,48 @@ const About = () => {
               </div>
             </div>
           )}
+
           <div className="max-w-3xl mx-auto">
             {timelineContent.map((item, index) => (
-              <div key={index} className="flex mb-8 relative">
-                <div className="w-24 flex-shrink-0">
-                  <div className="text-[#E74C3C] font-bold">{item.year}</div>
+              <motion.div
+                key={index}
+                className="flex mb-10 relative group"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                {/* Year */}
+                <div className="w-24 flex-shrink-0 pt-1">
+                  <span className="inline-block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold text-lg">
+                    {item.year}
+                  </span>
                 </div>
-                <div className="border-l-2 border-[#E74C3C] pl-8">
-                  <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.description}</p>
+
+                {/* Line and dot */}
+                <div className="relative mr-8 flex flex-col items-center">
+                  <div className="w-3 h-3 rounded-full bg-secondary ring-4 ring-secondary/20 flex-shrink-0 mt-2" />
+                  <div className="w-0.5 flex-1 bg-gradient-to-b from-secondary/40 to-transparent mt-2" />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 pb-2">
+                  <h3 className="font-semibold text-xl mb-2 font-heading group-hover:text-primary transition-colors text-neutral-900 dark:text-white">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground dark:text-zinc-300 leading-relaxed">{item.description}</p>
                   {isEditing && (
                     <Button
                       variant="destructive"
                       size="icon"
-                      className="absolute top-0 right-0"
+                      className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => handleDeleteTimelineItem(index)}
                     >
                       <Trash className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

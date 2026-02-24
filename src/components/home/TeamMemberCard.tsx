@@ -28,25 +28,20 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
 
       try {
         setIsLoading(true);
-
-        // Get the filename from the stored URL or path
         const fileName = member.image.split('/').pop();
-        
+
         if (fileName) {
-          // Get public URL directly using the filename
           const { data } = supabase
             .storage
             .from('team_images')
             .getPublicUrl(fileName);
-            
+
           if (data && data.publicUrl) {
             setImageUrl(data.publicUrl);
           } else {
-            console.error('Failed to get public URL for:', fileName);
             setImageUrl("/placeholder.svg");
           }
         } else {
-          console.error('Invalid image path:', member.image);
           setImageUrl("/placeholder.svg");
         }
       } catch (error) {
@@ -61,33 +56,45 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, index })
   }, [member.image]);
 
   return (
-    <div 
-      className="flex-none w-72 snap-start animate-slide-in-right"
-      style={{ animationDelay: `${index * 200}ms` }}
+    <div
+      className="flex-none w-72 snap-start"
+      style={{ animationDelay: `${index * 150}ms` }}
     >
-      <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
-        <div className="w-48 h-48 mb-4 overflow-hidden rounded-full bg-gray-100 relative">
+      <div className="group relative rounded-2xl overflow-hidden bg-white dark:bg-zinc-900/50 dark:border dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
+        {/* Image */}
+        <div className="w-full h-72 overflow-hidden relative bg-gray-100 dark:bg-zinc-800">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent" />
             </div>
           )}
-          <img 
+          <img
             src={imageUrl}
             alt={member.name}
-            className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+            className={`w-full h-full object-cover transition-all duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'} group-hover:scale-110`}
             loading="lazy"
             onError={(e) => {
-              console.error('Team member image failed to load:', imageUrl);
               const target = e.target as HTMLImageElement;
               target.onerror = null;
               target.src = "/placeholder.svg";
             }}
             onLoad={() => setIsLoading(false)}
           />
+
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+          {/* Name overlay on hover */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+            <p className="text-white/90 text-sm">{member.role}</p>
+          </div>
         </div>
-        <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
-        <p className="text-gray-600">{member.role}</p>
+
+        {/* Info */}
+        <div className="p-5 text-center">
+          <h3 className="text-lg font-semibold font-heading text-neutral-900 dark:text-white">{member.name}</h3>
+          <p className="text-muted-foreground dark:text-zinc-400 text-sm mt-1">{member.role}</p>
+        </div>
       </div>
     </div>
   );

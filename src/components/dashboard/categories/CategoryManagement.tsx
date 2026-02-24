@@ -29,7 +29,10 @@ interface Category {
 
 export const CategoryManagement = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editCategoryName, setEditCategoryName] = useState("");
   const queryClient = useQueryClient();
 
   const { data: categories, isLoading } = useQuery({
@@ -39,7 +42,7 @@ export const CategoryManagement = () => {
         .from("article_categories")
         .select("*")
         .order("name");
-      
+
       if (error) throw error;
       return data as Category[];
     },
@@ -70,6 +73,33 @@ export const CategoryManagement = () => {
     },
   });
 
+  const updateCategory = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const slug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+      const { error } = await supabase
+        .from("article_categories")
+        .update({ name, slug })
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      setIsEditDialogOpen(false);
+      setEditingCategory(null);
+      setEditCategoryName("");
+      toast.success("Catégorie mise à jour avec succès");
+    },
+    onError: (error) => {
+      console.error("Error updating category:", error);
+      toast.error("Erreur lors de la mise à jour de la catégorie");
+    },
+  });
+
   const deleteCategory = useMutation({
     mutationFn: async (categoryId: string) => {
       const { error } = await supabase
@@ -88,6 +118,12 @@ export const CategoryManagement = () => {
       toast.error("Erreur lors de la suppression de la catégorie");
     },
   });
+
+  const handleEditClick = (category: Category) => {
+    setEditingCategory(category);
+    setEditCategoryName(category.name);
+    setIsEditDialogOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -120,6 +156,38 @@ export const CategoryManagement = () => {
             </form>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Modifier la catégorie</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (editingCategory) {
+                  updateCategory.mutate({ id: editingCategory.id, name: editCategoryName });
+                }
+              }}
+              className="space-y-4"
+            >
+              <Input
+                placeholder="Nom de la catégorie"
+                value={editCategoryName}
+                onChange={(e) => setEditCategoryName(e.target.value)}
+                required
+              />
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Annuler
+                </Button>
+                <Button type="submit" disabled={updateCategory.isPending}>
+                  {updateCategory.isPending ? "Mise à jour..." : "Enregistrer"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {isLoading ? (
@@ -140,7 +208,14 @@ export const CategoryManagement = () => {
               <TableRow key={category.id}>
                 <TableCell>{category.name}</TableCell>
                 <TableCell>{category.slug}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditClick(category)}
+                  >
+                    Modifier
+                  </Button>
                   <Button
                     variant="destructive"
                     size="sm"

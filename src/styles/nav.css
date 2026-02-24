@@ -1,13 +1,55 @@
-
 .nav-link {
-  @apply text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors block w-full;
+  @apply text-white/90 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 block w-full relative;
 }
 
-.gradient-header {
-  @apply bg-gradient-to-r from-primary to-secondary;
+.nav-link::after {
+  content: '';
+  @apply absolute bottom-0 left-1/2 w-0 h-0.5 rounded-full transition-all duration-300;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)));
+  transform: translateX(-50%);
 }
 
-/* Update sidebar styling */
+.nav-link:hover::after,
+.nav-link.active::after {
+  @apply w-3/4;
+}
+
+.nav-link.active {
+  @apply text-white font-semibold;
+}
+
+/* Glassmorphism navbar */
+.glass-navbar {
+  background: rgba(30, 30, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-navbar.scrolled {
+  background: rgba(20, 20, 32, 0.92);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Mobile drawer overlay */
+.drawer-overlay {
+  @apply fixed inset-0 z-40;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Mobile drawer */
+.drawer-panel {
+  @apply fixed top-0 right-0 h-full z-50 w-72;
+  background: rgba(30, 30, 42, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Sidebar gradient */
 .sidebar-background {
   @apply bg-gradient-to-r from-primary to-secondary text-black;
 }

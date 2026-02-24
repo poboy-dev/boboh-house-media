@@ -17,7 +17,11 @@ import {
 import { UserRound } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
-export const AuthButton = () => {
+interface AuthButtonProps {
+  className?: string;
+}
+
+export const AuthButton = ({ className = "" }: AuthButtonProps) => {
   const session = useSession();
   const navigate = useNavigate();
 
@@ -60,7 +64,7 @@ export const AuthButton = () => {
   return session ? (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="rounded-full hover:opacity-80 transition-opacity">
+        <button className={`rounded-full hover:opacity-80 transition-opacity ${className}`}>
           <Avatar>
             <AvatarImage src={session?.user?.user_metadata?.avatar_url} />
             <AvatarFallback>
@@ -87,7 +91,7 @@ export const AuthButton = () => {
               </p>
             </div>
           </div>
-          <Button 
+          <Button
             variant="destructive"
             onClick={handleLogout}
             className="w-full"
@@ -98,10 +102,10 @@ export const AuthButton = () => {
       </PopoverContent>
     </Popover>
   ) : (
-    <Button 
+    <Button
       variant="secondary"
       onClick={handleAuth}
-      className="text-white hover:text-primary-foreground"
+      className={`hover:text-primary-foreground ${className}`}
     >
       Connexion
     </Button>

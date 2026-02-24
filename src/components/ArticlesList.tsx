@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useQuery } from '@tanstack/react-query';
 import { Article } from '@/types/article';
 import { ArticleCard } from './ArticleCard';
@@ -14,7 +15,7 @@ export const ArticlesList = ({ category }: ArticlesListProps) => {
   });
 
   if (isLoading) {
-    return <div className="text-center">Chargement des articles...</div>;
+    return <LoadingSpinner size={48} className="my-12" />;
   }
 
   if (error) {

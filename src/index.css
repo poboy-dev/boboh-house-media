@@ -6,19 +6,19 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
-    
+
     --primary: 44 96% 52%;
     --primary-foreground: 0 0% 100%;
-    
+
     --secondary: 354 70% 45%;
     --secondary-foreground: 0 0% 100%;
-    
+
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    
+
     --accent: 210 40% 96%;
     --accent-foreground: 222.2 47.4% 11.2%;
-    
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
@@ -26,50 +26,133 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
-  }
-}
+    --radius: 0.75rem;
 
-@layer base {
+    /* Glassmorphism tokens */
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-bg-light: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-border-light: rgba(255, 255, 255, 0.35);
+    --glass-blur: 16px;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --glass-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.16);
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --primary: 44 96% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 354 70% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    /* Dark Glassmorphism tokens */
+    --glass-bg: rgba(15, 15, 25, 0.45);
+    --glass-bg-light: rgba(20, 20, 35, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-light: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --glass-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-.gradient-header {
-  background: linear-gradient(to right, #2C3E50, #E74C3C);
+/* ─── Glassmorphism Utilities ─── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
-.hero-section {
-  position: relative;
-  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-                    url('https://media.istockphoto.com/id/482662938/fr/vectoriel/art-design-de-fond.jpg?s=612x612&w=0&k=20&c=N47O4HAAR_o0UuMLvJ4aIDSz7t65I_yHaGLJCb_OA9s=');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border-light);
+  box-shadow: var(--glass-shadow);
 }
 
-.service-card {
-  @apply bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+.glass-card {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-light);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-link {
-  @apply text-white hover:text-yellow-300 transition-colors duration-300;
+.glass-card:hover {
+  box-shadow: var(--glass-shadow-lg);
+  transform: translateY(-4px);
+  border-color: hsl(var(--primary) / 0.3);
 }
 
-/* Add image loading styles */
+/* ─── Section Headers ─── */
+.section-header {
+  @apply text-center mb-16;
+}
+
+.section-header h2 {
+  @apply text-3xl md:text-4xl font-bold mb-4;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.section-header p {
+  @apply text-muted-foreground text-lg max-w-2xl mx-auto;
+}
+
+.section-divider {
+  @apply w-20 h-1 mx-auto mt-4 rounded-full;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)));
+}
+
+/* ─── Image Styles ─── */
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Add debug outline to images that fail to load */
-img:not([src]), 
+img:not([src]),
 img[src=""],
 img[src="#"] {
   min-height: 100px;
@@ -77,19 +160,7 @@ img[src="#"] {
   position: relative;
 }
 
-img:not([src])::after, 
-img[src=""]::after,
-img[src="#"]::after {
-  content: 'Image not found';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 14px;
-  color: #666;
-}
-
-/* Add smooth loading transition */
+/* ─── Team member image loading ─── */
 .team-member-image {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
@@ -99,7 +170,7 @@ img[src="#"]::after {
   opacity: 1;
 }
 
-/* Rich Text Editor Styles */
+/* ─── Rich Text Editor Styles ─── */
 .ProseMirror {
   outline: none;
   min-height: 300px;
@@ -121,7 +192,7 @@ img[src="#"]::after {
   display: block;
 }
 
-/* Article Content Styles */
+/* ─── Article Content Styles ─── */
 .article-content img {
   max-width: 100%;
   height: auto;
@@ -135,6 +206,7 @@ img[src="#"]::after {
   font-weight: 700;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .article-content h2 {
@@ -142,6 +214,7 @@ img[src="#"]::after {
   font-weight: 600;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .article-content h3 {
@@ -149,6 +222,7 @@ img[src="#"]::after {
   font-weight: 600;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .article-content p {
@@ -164,4 +238,61 @@ img[src="#"]::after {
 
 .article-content li {
   margin-bottom: 0.25rem;
+}
+
+/* ─── Nav Styles ─── */
+.nav-link {
+  @apply text-white/90 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 block w-full relative;
+}
+
+.nav-link::after {
+  content: '';
+  @apply absolute bottom-0 left-1/2 w-0 h-0.5 rounded-full transition-all duration-300;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)));
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  @apply w-3/4;
+}
+
+.nav-link.active {
+  @apply text-white font-semibold;
+}
+
+/* Glassmorphism navbar */
+.glass-navbar {
+  background: rgba(30, 30, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-navbar.scrolled {
+  background: rgba(20, 20, 32, 0.92);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Mobile drawer overlay */
+.drawer-overlay {
+  @apply fixed inset-0 z-40;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Mobile drawer */
+.drawer-panel {
+  @apply fixed top-0 right-0 h-full z-50 w-72;
+  background: rgba(30, 30, 42, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Sidebar gradient */
+.sidebar-background {
+  @apply bg-gradient-to-r from-primary to-secondary text-black;
 }
