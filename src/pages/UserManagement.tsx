@@ -5,41 +5,23 @@ import { toast } from "sonner";
 import { UserTable } from "@/components/users/UserTable";
 import { UserForm } from "@/components/users/UserForm";
 import { UserRole } from "@/types/user";
-import type { Profile, AuthUser } from "@/types/user";
+import type { UserWithEmail } from "@/types/user";
 
 export const UserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
       try {
-        // Fetch profiles from the profiles table
-        const { data: profiles, error: profilesError } = await supabase
-          .from("profiles")
-          .select("*");
-        
-        if (profilesError) {
-          console.error("Error fetching profiles:", profilesError);
-          throw profilesError;
+        // Call the SECURITY DEFINER RPC that joins auth.users to expose emails to admins
+        const { data, error: rpcError } = await supabase.rpc("get_users_with_emails");
+
+        if (rpcError) {
+          console.error("Error calling get_users_with_emails RPC:", rpcError);
+          throw rpcError;
         }
-        
-        if (!profiles || profiles.length === 0) {
-          return [];
-        }
-        
-        // Explicit type assertion to avoid TypeScript error
-        const typedProfiles = profiles as Profile[];
-        
-        // Since we can't use admin API, we'll just use the profile data
-        // and set placeholder emails where necessary
-        const usersWithProfiles = typedProfiles.map(profile => {
-          return {
-            ...profile,
-            email: 'Contact administrator for email' // Placeholder since we can't access emails
-          };
-        });
-        
-        console.log("Users with profiles:", usersWithProfiles);
-        return usersWithProfiles;
+
+        console.log("Users with emails:", data);
+        return (data ?? []) as unknown as UserWithEmail[];
       } catch (error) {
         console.error("Error in queryFn:", error);
         throw error;
