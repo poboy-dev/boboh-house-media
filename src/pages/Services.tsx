@@ -7,7 +7,7 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { Button } from "@/components/ui/button";
 import { Pencil, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Link } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
