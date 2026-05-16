@@ -2,7 +2,7 @@
 import React from "react";
 import { RecentArticleCard } from "./RecentArticleCard";
 import { Article } from "@/types/article";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Newspaper } from "lucide-react";
 
 interface RecentArticlesSectionProps {

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Video, Megaphone, Mic } from "lucide-react";
 
 const services = [
