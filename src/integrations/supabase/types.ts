@@ -311,24 +311,6 @@ export type Database = {
           },
         ]
       }
-      user_full_names: {
-        Row: {
-          full_name: string | null
-          id: string | null
-          role: Database["public"]["Enums"]["user_role"] | null
-        }
-        Insert: {
-          full_name?: never
-          id?: string | null
-          role?: Database["public"]["Enums"]["user_role"] | null
-        }
-        Update: {
-          full_name?: never
-          id?: string | null
-          role?: Database["public"]["Enums"]["user_role"] | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
       check_user_liked_article: {
