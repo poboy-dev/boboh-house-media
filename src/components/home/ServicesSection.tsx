@@ -27,14 +27,14 @@ const services = [
   },
 ];
 
-const containerVariants= {
+const containerVariants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.15 },
   },
 };
 
-const cardVariants= {
+const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,

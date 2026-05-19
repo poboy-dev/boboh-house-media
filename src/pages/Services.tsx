@@ -11,14 +11,14 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
-const containerVariants= {
+const containerVariants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.12 },
   },
 };
 
-const cardVariants= {
+const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,

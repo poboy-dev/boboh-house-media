@@ -10,14 +10,14 @@ interface RecentArticlesSectionProps {
   isLoading: boolean;
 }
 
-const containerVariants= {
+const containerVariants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.12 },
   },
 };
 
-const cardVariants= {
+const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
