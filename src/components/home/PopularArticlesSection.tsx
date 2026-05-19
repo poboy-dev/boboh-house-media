@@ -2,7 +2,7 @@
 import React from "react";
 import { RecentArticleCard } from "./RecentArticleCard";
 import { Article } from "@/types/article";
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 
 interface PopularArticlesSectionProps {
@@ -10,14 +10,14 @@ interface PopularArticlesSectionProps {
   isLoading: boolean;
 }
 
-const containerVariants: Variants = {
+const containerVariants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.12 },
   },
 };
 
-const cardVariants: Variants = {
+const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
