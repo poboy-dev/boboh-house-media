@@ -1,6 +1,6 @@
 
 import React from "react";
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { Video, Megaphone, Mic } from "lucide-react";
 
 const services = [
@@ -27,14 +27,14 @@ const services = [
   },
 ];
 
-const containerVariants: Variants = {
+const containerVariants= {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.15 },
   },
 };
 
-const cardVariants: Variants = {
+const cardVariants= {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
