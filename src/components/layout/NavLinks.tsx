@@ -54,12 +54,23 @@ export const NavLinks = () => {
         <DropdownMenuTrigger className="nav-link inline-flex items-center justify-start w-full md:w-auto">
           Pages <ChevronDown className="ml-1 h-4 w-4" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white/95 backdrop-blur-md border-white/20">
+        <DropdownMenuContent
+          align="end"
+          sideOffset={8}
+          className="min-w-56 p-2 bg-popover/95 backdrop-blur-xl border border-border/60 shadow-2xl rounded-xl animate-in fade-in-0 zoom-in-95"
+        >
           {categories?.map((category) => (
-            <DropdownMenuItem key={category.slug}>
-              <Link to={`/category/${category.slug}`} className="w-full inline-flex items-center">
-                <FolderOpen className="mr-2 h-4 w-4" />
-                {category.name}
+            <DropdownMenuItem
+              key={category.slug}
+              asChild
+              className="group rounded-lg px-2 py-2 cursor-pointer transition-all duration-200 focus:bg-gradient-to-r focus:from-primary/15 focus:to-secondary/15 focus:text-foreground"
+            >
+              <Link
+                to={`/category/${category.slug}`}
+                className="w-full inline-flex items-center gap-2 text-foreground/80 group-hover:text-foreground group-hover:translate-x-1 transition-all duration-200"
+              >
+                <FolderOpen className="h-4 w-4 text-primary group-hover:scale-110 transition-transform duration-200" />
+                <span className="font-medium">{category.name}</span>
               </Link>
             </DropdownMenuItem>
           ))}
