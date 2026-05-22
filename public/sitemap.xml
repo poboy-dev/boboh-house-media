@@ -3,7 +3,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://boboh-house-media.com/</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,43 +11,51 @@
   <!-- Static Pages -->
   <url>
     <loc>https://boboh-house-media.com/services</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/portfolio</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/about</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/contact</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/bobohgeek</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://boboh-house-media.com/bh-association</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category: arts-de-sc-ne -->
+  <url>
+    <loc>https://boboh-house-media.com/category/arts-de-sc-ne</loc>
+    <lastmod>2026-02-25</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
@@ -83,6 +91,14 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Category: li-tterature -->
+  <url>
+    <loc>https://boboh-house-media.com/category/li-tterature</loc>
+    <lastmod>2026-03-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Category: music -->
   <url>
     <loc>https://boboh-house-media.com/category/music</loc>
@@ -99,10 +115,130 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Category: remy-meva-a-press-kit -->
+  <url>
+    <loc>https://boboh-house-media.com/category/remy-meva-a-press-kit</loc>
+    <lastmod>2026-04-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Article: 02df8417-6d40-443d-aaf0-aed186d3100c -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/02df8417-6d40-443d-aaf0-aed186d3100c</loc>
+    <lastmod>2026-05-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 2b47afc2-d572-4536-99dd-dc46b6431d80 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/2b47afc2-d572-4536-99dd-dc46b6431d80</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: e364e2d3-b903-4ec2-b986-bc0806f585d5 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/e364e2d3-b903-4ec2-b986-bc0806f585d5</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: f37de854-2958-489b-b18a-b45d6344f635 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/f37de854-2958-489b-b18a-b45d6344f635</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: d2c8a282-03a2-4fb7-8e3b-21ce3cdd416b -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/d2c8a282-03a2-4fb7-8e3b-21ce3cdd416b</loc>
+    <lastmod>2026-04-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: fee991f5-05f9-4d5c-8d7a-dc921ef83303 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/fee991f5-05f9-4d5c-8d7a-dc921ef83303</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: eceedbb6-d983-4b7c-b7b8-2115a82c5fd0 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/eceedbb6-d983-4b7c-b7b8-2115a82c5fd0</loc>
+    <lastmod>2026-03-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 7397ea56-6822-4bd6-aa44-cfc77bc0d6d0 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/7397ea56-6822-4bd6-aa44-cfc77bc0d6d0</loc>
+    <lastmod>2026-03-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 2d08ec85-494f-41dc-b4b3-f58e17d9988e -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/2d08ec85-494f-41dc-b4b3-f58e17d9988e</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 85fe2241-b099-446e-baf0-74b381a79218 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/85fe2241-b099-446e-baf0-74b381a79218</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 63c119c9-b5a9-41a1-ab46-e44c7d9b98a6 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/63c119c9-b5a9-41a1-ab46-e44c7d9b98a6</loc>
+    <lastmod>2026-02-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: 05cfe247-eb6b-4e39-8d99-62e8bb378c63 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/05cfe247-eb6b-4e39-8d99-62e8bb378c63</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: a35b1467-1d6a-4340-ac16-c50eabfd2758 -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/a35b1467-1d6a-4340-ac16-c50eabfd2758</loc>
+    <lastmod>2026-03-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Article: e5ee14e5-a710-433c-9320-d20a0848039a -->
+  <url>
+    <loc>https://boboh-house-media.com/articles/e5ee14e5-a710-433c-9320-d20a0848039a</loc>
+    <lastmod>2026-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- Article: d8d3ef3c-908f-4cec-9211-80a8522ac02d -->
   <url>
     <loc>https://boboh-house-media.com/articles/d8d3ef3c-908f-4cec-9211-80a8522ac02d</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-03-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -110,7 +246,7 @@
   <!-- Article: 1ef3d47d-963d-4c41-9e1c-417c732cf59d -->
   <url>
     <loc>https://boboh-house-media.com/articles/1ef3d47d-963d-4c41-9e1c-417c732cf59d</loc>
-    <lastmod>2026-01-19</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -126,7 +262,7 @@
   <!-- Article: 241b0292-05a3-4bec-8b08-0ae9188b95c4 -->
   <url>
     <loc>https://boboh-house-media.com/articles/241b0292-05a3-4bec-8b08-0ae9188b95c4</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

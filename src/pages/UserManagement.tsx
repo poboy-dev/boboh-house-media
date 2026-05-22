@@ -31,27 +31,29 @@ export const UserManagement = () => {
 
   const handleCreateUser = async (email: string, password: string, role: UserRole) => {
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      const { data: { session } } = await supabase.auth.getSession();
 
-      if (authError) throw authError;
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-create-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ email, password, role }),
+        }
+      );
 
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ role })
-          .eq("id", authData.user.id);
-
-        if (profileError) throw profileError;
-      }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Erreur lors de la création de l'utilisateur");
 
       toast.success("Utilisateur créé avec succès");
       refetch();
     } catch (error) {
       console.error("Error creating user:", error);
-      toast.error("Erreur lors de la création de l'utilisateur");
+      toast.error("Erreur : " + (error as Error).message);
     }
   };
 
