@@ -1,41 +1,68 @@
-## Objectif
+# Notifications de nouveaux articles (push navigateur)
 
-Ajouter une barre de recherche/filtre sur toutes les pages qui listent des articles (Portfolio, Boboh Geek, BH Association, pages de catégorie), pour que le visiteur puisse trouver rapidement un article par mot-clé.
+Un seul canal pour cette mise à jour : **notifications push web** pour les utilisateurs qui ont un compte sur la plateforme.
 
-## Approche
+L'abonnement par email pour les visiteurs sans compte est reporté à plus tard (la structure est prévue pour l'ajouter facilement).
 
-Toutes ces pages utilisent le même composant `ArticlesList`. On ajoute la barre de recherche directement dans ce composant — un seul changement, bénéfice partout, aucune duplication.
+Déclenchement automatique dès qu'un article est créé.
 
-## Ce qui sera ajouté
+## Coût
 
-1. **Barre de recherche** en haut de la grille d'articles
-   - Champ texte avec icône loupe (composant `Input` shadcn + icône Lucide `Search`)
-   - Placeholder : « Rechercher un article… »
-   - Bouton « ✕ » pour effacer la recherche quand un texte est saisi
+Aucun coût financier :
+- Le push web passe par les services gratuits des navigateurs (FCM pour Chrome, Mozilla, WNS pour Edge) — pas de compte ni de facturation.
+- Les clés VAPID sont générées gratuitement.
+- Une invocation d'edge function par article publié : négligeable dans le quota Supabase.
 
-2. **Filtrage côté client**
-   - Recherche insensible à la casse et aux accents
-   - Cherche dans le **titre** et la **description** de l'article
-   - Mise à jour instantanée (au fur et à mesure de la frappe, avec un léger debounce de 200 ms pour la fluidité)
+## 1. Base de données (migration)
 
-3. **États visuels**
-   - Compteur discret : « 12 articles » / « 3 résultats pour "musique" »
-   - Si aucun résultat : message « Aucun article ne correspond à votre recherche » + bouton « Réinitialiser »
+**Table `push_subscriptions`**
+- `user_id` (référence l'utilisateur connecté)
+- `endpoint` (unique), `p256dh`, `auth` — les clés fournies par le navigateur
+- `user_agent` pour identifier l'appareil
+- RLS : chaque utilisateur ne voit, crée et supprime que ses propres abonnements ; les envois se font côté serveur avec les droits élevés
 
-4. **Pages concernées** (automatiquement via `ArticlesList`)
-   - `/portfolio`
-   - `/boboh-geek`
-   - `/bh-association`
-   - `/categories/:slug`
+**Trigger sur `articles`** (après création) → appelle l'edge function d'envoi via `pg_net`.
+
+## 2. Edge function `notify-new-article`
+
+- Déclenchée par le trigger avec l'id de l'article
+- Récupère titre, description, image et id
+- Envoie une notification Web Push signée VAPID à chaque abonnement enregistré
+- Supprime automatiquement les abonnements expirés (réponse 404/410 du service push)
+
+## 3. Frontend
+
+**Service worker `public/sw.js`** — uniquement pour recevoir les push et ouvrir l'article au clic. Aucun cache, aucune installation PWA.
+
+**Composant d'activation** (dans le header ou le tableau de bord, visible uniquement si connecté) :
+- Bouton « Activer les notifications » → demande la permission navigateur puis enregistre l'abonnement
+- Trois états : non activé / activé (avec possibilité de désactiver) / bloqué par le navigateur
+- Message clair si le navigateur ne supporte pas le push (Safari iOS hors app installée)
+
+## 4. Secrets
+
+- `VAPID_PUBLIC_KEY` et `VAPID_PRIVATE_KEY` — générés automatiquement, la clé publique est exposée côté client (c'est normal et sans risque)
 
 ## Détails techniques
 
-- Filtrage **client-side** uniquement (les listes restent petites, pas besoin d'aller-retour serveur)
-- Normalisation Unicode (`.normalize("NFD").replace(/\p{Diacritic}/gu, "")`) pour gérer les accents
-- Aucune modification de la base de données, du backend ou des routes
-- Aucune modification des autres composants — uniquement `src/components/ArticlesList.tsx`
+```text
+Article créé (dashboard)
+        │
+        ▼
+Trigger SQL AFTER INSERT
+        │
+        ▼
+pg_net.http_post → edge function notify-new-article
+        │
+        ▼
+Web Push (VAPID) → navigateurs des utilisateurs abonnés
+```
 
-## Hors scope
+- Extension `pg_net` à activer dans la migration.
+- Envoi Web Push implémenté dans l'edge function (chiffrement aes128gcm + JWT VAPID), sans dépendance externe payante.
+- Les notifications ne partent qu'aux utilisateurs ayant explicitement cliqué « Activer les notifications ».
 
-- Sections « Articles récents » et « Articles populaires » de la page d'accueil (elles affichent une sélection limitée, pas une liste filtrable — peuvent être ajoutées plus tard si souhaité)
-- Filtres avancés (par date, par auteur, par catégorie multiple) — peuvent être ajoutés dans une itération future
+## Hors scope (pour plus tard)
+
+- Abonnement email pour les visiteurs sans compte, avec double opt-in et lien de désabonnement
+- Préférences fines (notifier seulement certaines catégories)
