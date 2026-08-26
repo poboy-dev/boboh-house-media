@@ -8,6 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { LikeButton } from './LikeButton';
 import { SEOHead } from './SEOHead';
 import { ShareButton } from './ShareButton';
+import { NotifyArticleCTA } from './notifications/NotifyArticleCTA';
+
 export const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
