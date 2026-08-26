@@ -98,7 +98,9 @@ export const ArticleDetail = () => {
         className="prose prose-lg max-w-none article-content"
         dangerouslySetInnerHTML={{ __html: article.content || '' }}
       />
+      <NotifyArticleCTA />
       <Comments articleId={article.id} />
+
     </article>
   );
 };
