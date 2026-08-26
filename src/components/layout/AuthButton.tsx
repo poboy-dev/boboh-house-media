@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/popover";
 import { UserRound } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { PushNotificationToggle } from "@/components/notifications/PushNotificationToggle";
+
 
 interface AuthButtonProps {
   className?: string;
@@ -91,6 +93,7 @@ export const AuthButton = ({ className = "" }: AuthButtonProps) => {
               </p>
             </div>
           </div>
+          <PushNotificationToggle />
           <Button
             variant="destructive"
             onClick={handleLogout}
@@ -98,6 +101,7 @@ export const AuthButton = ({ className = "" }: AuthButtonProps) => {
           >
             Déconnexion
           </Button>
+
         </div>
       </PopoverContent>
     </Popover>
