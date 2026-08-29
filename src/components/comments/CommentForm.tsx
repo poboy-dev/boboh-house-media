@@ -25,13 +25,17 @@ export const CommentForm = ({ articleId, onCommentAdded }: CommentFormProps) => 
 
     setIsSubmitting(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+
       const { error } = await supabase.from("comments").insert({
         article_id: articleId,
         author_name: authorName.trim(),
         content: content.trim(),
+        user_id: session?.user?.id ?? null,
       });
 
       if (error) throw error;
+
 
       toast.success("Commentaire ajouté avec succès");
       setAuthorName("");
