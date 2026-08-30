@@ -1,208 +1,112 @@
-// @ts-nocheck — This is a Deno-based Supabase Edge Function.
-// URL imports and the Deno global are valid at runtime but not
-// recognized by the Node/TS language server. Install the "Deno"
-// VS Code extension (denoland.vscode-deno) for full IDE support.
+// @ts-nocheck — Supabase Edge Function (Deno).
+// Rôle : servir l'IMAGE Open Graph d'un article (binaire), derrière le proxy
+// https://www.boboh-house-media.com/og/article/:id
+//
+// Sécurité :
+// - utilise la clé ANON (RLS respectée, aucun bypass, aucun secret exposé) ;
+// - valide strictement l'UUID reçu ;
+// - ne renvoie AUCUNE donnée de l'article (uniquement des octets d'image) ;
+// - n'accepte de proxifier que des images hébergées sur des domaines autorisés
+//   (protection contre l'utilisation en open proxy / SSRF) ;
+// - 404 si l'article n'existe pas ou n'est pas lisible publiquement.
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const SITE_URL = "https://www.boboh-house-media.com";
+const FALLBACK_IMAGE = `${SITE_URL}/logo.png`;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+const ALLOWED_IMAGE_HOSTS = new Set([
+  new URL(supabaseUrl).host,
+  "www.boboh-house-media.com",
+  "boboh-house-media.com",
+  "boboh-house-media.lovable.app",
+]);
+
+const baseHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "X-Content-Type-Options": "nosniff",
+  Vary: "Accept",
 };
 
-// IMPORTANT: Update this to your custom domain
-const SITE_URL = "https://boboh-house-media.com";
-const SITE_NAME = "BOBOH HOUSE MEDIA";
-
-// Escape HTML special characters to prevent XSS
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+function notFound() {
+  return new Response("Not found", {
+    status: 404,
+    headers: { ...baseHeaders, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=60" },
+  });
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: baseHeaders });
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    return new Response("Method not allowed", { status: 405, headers: baseHeaders });
   }
 
   try {
-    const url = new URL(req.url);
-    const articleId = url.searchParams.get('id');
+    const id = new URL(req.url).searchParams.get("id") ?? "";
+    if (!UUID_RE.test(id)) return notFound();
 
-    console.log('OG Image request for article:', articleId);
-
-    if (!articleId) {
-      console.error('No article ID provided');
-      // Redirect to homepage if no ID
-      return new Response(null, {
-        status: 302,
-        headers: { ...corsHeaders, Location: SITE_URL },
-      });
-    }
-
-    // Create Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Fetch article data
+    const supabase = createClient(supabaseUrl, anonKey);
+    // Seulement les colonnes publiques strictement nécessaires.
     const { data: article, error } = await supabase
-      .from('articles')
-      .select('id, title, description, image, category')
-      .eq('id', articleId)
-      .single();
+      .from("articles")
+      .select("id, image, updated_at")
+      .eq("id", id)
+      .maybeSingle();
 
-    if (error || !article) {
-      console.error('Article not found:', error);
-      // Redirect to homepage if article not found
-      return new Response(null, {
-        status: 302,
-        headers: { ...corsHeaders, Location: SITE_URL },
-      });
+    if (error || !article) return notFound();
+
+    // ETag basé sur l'article + sa date de mise à jour => invalidation automatique
+    // quand l'image ou le contenu de l'article change.
+    const etag = `W/"og-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
+    if (req.headers.get("if-none-match") === etag) {
+      return new Response(null, { status: 304, headers: { ...baseHeaders, ETag: etag } });
     }
 
-    console.log('Article found:', article.title);
-
-    // Build the canonical URL for the article
-    const articleUrl = `${SITE_URL}/articles/${article.id}`;
-
-    // Serve OG HTML to social crawlers, and a true HTTP redirect to human browsers.
-    // This avoids users seeing a raw HTML page in in-app browsers that block/limit JS.
-    const userAgent = (req.headers.get('user-agent') || '').toLowerCase();
-    const isSocialCrawler = /(facebookexternalhit|facebot|twitterbot|whatsapp|telegrambot|slackbot|discordbot|linkedinbot|pinterest|googlebot|bingbot|embedly|crawler|bot)/i.test(
-      userAgent
-    );
-
-    // Ensure image URL is absolute
-    let imageUrl = article.image || `${SITE_URL}/og-image.png`;
-    if (imageUrl && !imageUrl.startsWith('http')) {
-      imageUrl = `${SITE_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    let imageUrl = article.image || FALLBACK_IMAGE;
+    if (!/^https?:\/\//i.test(imageUrl)) {
+      imageUrl = `${SITE_URL}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
     }
 
-    // Escape and truncate for meta tags
-    const safeTitle = escapeHtml(article.title);
-    const description = article.description
-      ? escapeHtml(article.description.substring(0, 160) + (article.description.length > 160 ? '...' : ''))
-      : `Lisez cet article sur ${SITE_NAME}`;
-
-    // Human users: fast redirect (no HTML rendered)
-    if (!isSocialCrawler) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          ...corsHeaders,
-          Location: articleUrl,
-          'Cache-Control': 'no-store',
-          Vary: 'User-Agent',
-        },
-      });
+    let target: URL;
+    try {
+      target = new URL(imageUrl);
+    } catch {
+      target = new URL(FALLBACK_IMAGE);
+    }
+    if (target.protocol !== "https:" || !ALLOWED_IMAGE_HOSTS.has(target.host)) {
+      target = new URL(FALLBACK_IMAGE);
     }
 
-    // Generate HTML with Open Graph meta tags
-    // Social crawlers (Facebook, WhatsApp, Twitter) don't execute JavaScript,
-    // so they will read the meta tags. Human users will be redirected via JS.
-    const html = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Primary Meta Tags -->
-  <title>${safeTitle} | ${SITE_NAME}</title>
-  <meta name="title" content="${safeTitle} | ${SITE_NAME}">
-  <meta name="description" content="${description}">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="${req.url}">
-  <meta property="og:title" content="${safeTitle}">
-  <meta property="og:description" content="${description}">
-  <meta property="og:image" content="${imageUrl}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:site_name" content="${SITE_NAME}">
-  <meta property="og:locale" content="fr_FR">
-  
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="${req.url}">
-  <meta name="twitter:title" content="${safeTitle}">
-  <meta name="twitter:description" content="${description}">
-  <meta name="twitter:image" content="${imageUrl}">
-  
-  <!-- Canonical URL -->
-  <link rel="canonical" href="${articleUrl}">
-  
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: #fff;
-    }
-    .container {
-      text-align: center;
-      padding: 2rem;
-    }
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    p { opacity: 0.8; margin-bottom: 1rem; }
-    a { color: #60a5fa; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-  
-  <!-- JavaScript redirect for human users (bots don't execute JS) -->
-  <script>
-    window.location.replace("${articleUrl}");
-  </script>
-</head>
-<body>
-  <noscript>
-    <meta http-equiv="refresh" content="0;url=${articleUrl}">
-  </noscript>
-  <div class="container">
-    <div class="spinner"></div>
-    <p>Redirection en cours...</p>
-    <p><a href="${articleUrl}">Cliquez ici si vous n'êtes pas redirigé</a></p>
-  </div>
-</body>
-</html>`;
+    const upstream = await fetch(target.toString(), {
+      headers: { Accept: "image/*" },
+      signal: AbortSignal.timeout(8000),
+    });
 
-    return new Response(html, {
+    if (!upstream.ok) return notFound();
+
+    const contentType = upstream.headers.get("content-type") || "image/jpeg";
+    if (!contentType.startsWith("image/")) return notFound();
+
+    const bytes = new Uint8Array(await upstream.arrayBuffer());
+
+    return new Response(req.method === "HEAD" ? null : bytes, {
       status: 200,
       headers: {
-        ...corsHeaders,
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600',
-        Vary: 'User-Agent',
+        ...baseHeaders,
+        "Content-Type": contentType,
+        "Content-Length": String(bytes.byteLength),
+        ETag: etag,
+        // Cache CDN long, revalidation rapide côté client.
+        "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
       },
     });
-
-  } catch (error) {
-    console.error('Error in og-image function:', error);
-    return new Response('Internal server error', {
-      status: 500,
-      headers: corsHeaders,
-    });
+  } catch (_e) {
+    return notFound();
   }
 });

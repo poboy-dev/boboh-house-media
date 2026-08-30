@@ -3,6 +3,8 @@ project_id = "yxiocwtfejvgtupqtcnx"
 [functions.og-image]
 verify_jwt = false
 
-[functions.notify-new-article]
+[functions.og-meta]
 verify_jwt = false
 
+[functions.notify-new-article]
+verify_jwt = false

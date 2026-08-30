@@ -1,5 +1,20 @@
 {
   "rewrites": [
+    {
+      "source": "/og/article/:id",
+      "destination": "https://yxiocwtfejvgtupqtcnx.supabase.co/functions/v1/og-image?id=:id"
+    },
+    {
+      "source": "/articles/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|twitterbot|whatsapp|telegrambot|slackbot|discordbot|linkedinbot|pinterest|redditbot|embedly|skypeuripreview|vkshare|applebot|googlebot|bingbot|yandex|quora link preview|nuzzel|outbrain|w3c_validator|developers\\.google\\.com/\\+/web/snippet).*"
+        }
+      ],
+      "destination": "https://yxiocwtfejvgtupqtcnx.supabase.co/functions/v1/og-meta?id=:id"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
