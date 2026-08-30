@@ -24,10 +24,11 @@ export const ShareButton = ({
 }: ShareButtonProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Use Edge Function URL for social sharing to get proper OG meta tags
-  // The Edge Function serves HTML with OG tags for crawlers and redirects humans via JS
+  // On partage l'URL réelle de l'article sur notre domaine.
+  // Les crawlers sociaux reçoivent les balises OG via la réécriture Vercel
+  // (/articles/:id -> edge function og-meta), plus besoin d'exposer Supabase.
   const ogUrl = articleId
-    ? `https://yxiocwtfejvgtupqtcnx.supabase.co/functions/v1/og-image?id=${articleId}`
+    ? `https://www.boboh-house-media.com/articles/${articleId}`
     : url;
 
   const shareText = `${title}${description ? ` - ${description}` : ''}`;
