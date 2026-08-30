@@ -1,64 +1,94 @@
 import { useEffect } from 'react';
 
+export const SITE_URL = 'https://www.boboh-house-media.com';
+const SITE_NAME = 'BOBOH HOUSE MEDIA';
+
 interface SEOHeadProps {
   title: string;
   description: string;
+  /** Image principale de l'article (fallback si pas d'articleId) */
   image?: string;
+  /** URL canonique de la page */
   url?: string;
   type?: string;
+  /** UUID de l'article : sert à construire l'URL OG sur notre propre domaine */
+  articleId?: string;
+  publishedTime?: string;
+  author?: string;
+  section?: string;
 }
 
-export const SEOHead = ({ 
-  title, 
-  description, 
-  image, 
-  url = typeof window !== 'undefined' ? window.location.href : '',
-  type = 'article'
+export const SEOHead = ({
+  title,
+  description,
+  image,
+  url,
+  type = 'article',
+  articleId,
+  publishedTime,
+  author,
+  section,
 }: SEOHeadProps) => {
   useEffect(() => {
-    // Update document title
-    document.title = `${title} | BOBOH HOUSE MEDIA`;
+    document.title = `${title} | ${SITE_NAME}`;
 
-    // Helper function to update or create meta tags
-    const updateMetaTag = (property: string, content: string, isProperty = true) => {
+    const canonical = url
+      ?? (articleId ? `${SITE_URL}/articles/${articleId}` : (typeof window !== 'undefined' ? window.location.href : SITE_URL));
+
+    // L'image OG passe toujours par notre domaine (jamais l'URL Supabase brute).
+    const ogImage = articleId ? `${SITE_URL}/og/article/${articleId}` : image;
+
+    const setMeta = (key: string, content: string, isProperty = true) => {
       const attribute = isProperty ? 'property' : 'name';
-      let element = document.querySelector(`meta[${attribute}="${property}"]`);
-      
+      let element = document.querySelector(`meta[${attribute}="${key}"]`);
       if (!element) {
         element = document.createElement('meta');
-        element.setAttribute(attribute, property);
+        element.setAttribute(attribute, key);
         document.head.appendChild(element);
       }
       element.setAttribute('content', content);
     };
 
-    // Basic meta tags
-    updateMetaTag('description', description, false);
-
-    // Open Graph tags
-    updateMetaTag('og:title', title);
-    updateMetaTag('og:description', description);
-    updateMetaTag('og:type', type);
-    updateMetaTag('og:url', url);
-    if (image) {
-      updateMetaTag('og:image', image);
-    }
-    updateMetaTag('og:site_name', 'BOBOH HOUSE MEDIA');
-    updateMetaTag('og:locale', 'fr_FR');
-
-    // Twitter Card tags
-    updateMetaTag('twitter:card', 'summary_large_image', false);
-    updateMetaTag('twitter:title', title, false);
-    updateMetaTag('twitter:description', description, false);
-    if (image) {
-      updateMetaTag('twitter:image', image, false);
-    }
-
-    // Cleanup function to restore default meta on unmount
-    return () => {
-      document.title = 'BOBOH HOUSE MEDIA';
+    const setCanonical = (href: string) => {
+      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', href);
     };
-  }, [title, description, image, url, type]);
+
+    setMeta('description', description, false);
+    setCanonical(canonical);
+
+    setMeta('og:type', type);
+    setMeta('og:title', title);
+    setMeta('og:description', description);
+    setMeta('og:url', canonical);
+    setMeta('og:site_name', SITE_NAME);
+    setMeta('og:locale', 'fr_FR');
+    if (ogImage) {
+      setMeta('og:image', ogImage);
+      setMeta('og:image:secure_url', ogImage);
+      setMeta('og:image:width', '1200');
+      setMeta('og:image:height', '630');
+      setMeta('og:image:alt', title);
+    }
+    if (publishedTime) setMeta('article:published_time', publishedTime);
+    if (author) setMeta('article:author', author);
+    if (section) setMeta('article:section', section);
+
+    setMeta('twitter:card', 'summary_large_image', false);
+    setMeta('twitter:title', title, false);
+    setMeta('twitter:description', description, false);
+    setMeta('twitter:url', canonical, false);
+    if (ogImage) setMeta('twitter:image', ogImage, false);
+
+    return () => {
+      document.title = SITE_NAME;
+    };
+  }, [title, description, image, url, type, articleId, publishedTime, author, section]);
 
   return null;
 };

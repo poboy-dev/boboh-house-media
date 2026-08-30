@@ -75,6 +75,10 @@ export const ArticleDetail = () => {
         title={article.title}
         description={article.description || ''}
         image={article.image}
+        articleId={article.id}
+        publishedTime={article.date ? new Date(article.date).toISOString() : undefined}
+        author={article.author || undefined}
+        section={article.category || undefined}
       />
       <img
         src={article.image}
