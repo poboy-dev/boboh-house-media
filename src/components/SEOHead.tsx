@@ -71,8 +71,6 @@ export const SEOHead = ({
     if (ogImage) {
       setMeta('og:image', ogImage);
       setMeta('og:image:secure_url', ogImage);
-      setMeta('og:image:width', '1200');
-      setMeta('og:image:height', '630');
       setMeta('og:image:alt', title);
     }
     if (publishedTime) setMeta('article:published_time', publishedTime);

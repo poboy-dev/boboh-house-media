@@ -86,8 +86,6 @@ Deno.serve(async (req) => {
 <meta property="og:url" content="${articleUrl}">
 <meta property="og:image" content="${ogImage}">
 <meta property="og:image:secure_url" content="${ogImage}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${title}">
 <meta property="article:published_time" content="${published}">
 <meta property="article:author" content="${author}">
@@ -98,8 +96,7 @@ ${section ? `<meta property="article:section" content="${section}">` : ""}
 <meta name="twitter:description" content="${description}">
 <meta name="twitter:image" content="${ogImage}">
 <meta name="twitter:url" content="${articleUrl}">
-
-<meta http-equiv="refresh" content="0;url=${articleUrl}">
+<script>window.location.replace(${JSON.stringify(articleUrl)});</script>
 </head>
 <body>
 <h1>${title}</h1>
