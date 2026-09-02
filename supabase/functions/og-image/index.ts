@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
 
     // ETag basé sur l'article + sa date de mise à jour => invalidation automatique
     // quand l'image ou le contenu de l'article change.
-    const etag = `W/"ogc2-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
+    const etag = `W/"ogc3-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
     if (req.headers.get("if-none-match") === etag) {
       return new Response(null, { status: 304, headers: { ...baseHeaders, ETag: etag } });
     }
