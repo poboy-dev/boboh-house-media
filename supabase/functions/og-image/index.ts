@@ -11,6 +11,7 @@
 // - 404 si l'article n'existe pas ou n'est pas lisible publiquement.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Image } from "https://deno.land/x/imagescript@1.2.17/mod.ts";
 
 const SITE_URL = "https://www.boboh-house-media.com";
 const FALLBACK_IMAGE = `${SITE_URL}/logo.png`;
@@ -63,7 +64,7 @@ Deno.serve(async (req) => {
 
     // ETag basé sur l'article + sa date de mise à jour => invalidation automatique
     // quand l'image ou le contenu de l'article change.
-    const etag = `W/"og-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
+    const etag = `W/"ogc2-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
     if (req.headers.get("if-none-match") === etag) {
       return new Response(null, { status: 304, headers: { ...baseHeaders, ETag: etag } });
     }
