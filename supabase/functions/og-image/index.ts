@@ -98,29 +98,30 @@ Deno.serve(async (req) => {
     let outType = contentType;
 
     // WhatsApp ignore les aperçus dont l'image dépasse ~600 Ko et préfère un
-    // ratio proche de 1.91:1. On normalise donc : 1200x630 max, JPEG compressé.
+    // ratio 1.91:1. On normalise : canevas 1200x630, image entière centrée
+    // (aucun recadrage : les titres incrustés restent lisibles), JPEG compressé.
     try {
       const image = await Image.decode(bytes);
       const TARGET_W = 1200;
       const TARGET_H = 630;
-      const scale = Math.max(TARGET_W / image.width, TARGET_H / image.height);
-      const resized = image.resize(
-        Math.max(TARGET_W, Math.round(image.width * scale)),
-        Math.max(TARGET_H, Math.round(image.height * scale)),
-      );
-      resized.crop(
-        Math.max(0, Math.round((resized.width - TARGET_W) / 2)),
-        Math.max(0, Math.round((resized.height - TARGET_H) / 2)),
-        Math.min(TARGET_W, resized.width),
-        Math.min(TARGET_H, resized.height),
-      );
-      let encoded = await resized.encodeJPEG(82);
-      if (encoded.byteLength > 300_000) encoded = await resized.encodeJPEG(65);
+      const scale = Math.min(TARGET_W / image.width, TARGET_H / image.height);
+      const w = Math.max(1, Math.round(image.width * scale));
+      const h = Math.max(1, Math.round(image.height * scale));
+      const resized = image.resize(w, h);
+
+      // Fond sombre proche de l'identité de marque.
+      const canvas = new Image(TARGET_W, TARGET_H);
+      canvas.fill(0x2b1f1aff);
+      canvas.composite(resized, Math.round((TARGET_W - w) / 2), Math.round((TARGET_H - h) / 2));
+
+      let encoded = await canvas.encodeJPEG(82);
+      if (encoded.byteLength > 300_000) encoded = await canvas.encodeJPEG(65);
       bytes = encoded;
       outType = "image/jpeg";
     } catch (_e) {
       // Si le décodage échoue, on sert l'original tel quel.
     }
+
 
     return new Response(req.method === "HEAD" ? null : bytes, {
       status: 200,
