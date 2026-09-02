@@ -62,14 +62,20 @@ const Auth = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      // On force le retour vers le site (jamais vers Supabase)
+      const redirectTo = window.location.hostname.includes("localhost")
+        ? `${window.location.origin}/auth`
+        : "https://www.boboh-house-media.com/auth";
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { username },
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: redirectTo,
         },
       });
+
       if (error) {
         toast.error(error.message);
       } else {
