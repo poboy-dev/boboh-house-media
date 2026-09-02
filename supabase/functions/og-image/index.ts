@@ -11,6 +11,7 @@
 // - 404 si l'article n'existe pas ou n'est pas lisible publiquement.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Image } from "https://deno.land/x/imagescript@1.2.17/mod.ts";
 
 const SITE_URL = "https://www.boboh-house-media.com";
 const FALLBACK_IMAGE = `${SITE_URL}/logo.png`;
@@ -63,7 +64,7 @@ Deno.serve(async (req) => {
 
     // ETag basé sur l'article + sa date de mise à jour => invalidation automatique
     // quand l'image ou le contenu de l'article change.
-    const etag = `W/"og-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
+    const etag = `W/"ogc3-${article.id}-${new Date(article.updated_at ?? 0).getTime()}"`;
     if (req.headers.get("if-none-match") === etag) {
       return new Response(null, { status: 304, headers: { ...baseHeaders, ETag: etag } });
     }
@@ -93,19 +94,47 @@ Deno.serve(async (req) => {
     const contentType = upstream.headers.get("content-type") || "image/jpeg";
     if (!contentType.startsWith("image/")) return notFound();
 
-    const bytes = new Uint8Array(await upstream.arrayBuffer());
+    let bytes = new Uint8Array(await upstream.arrayBuffer());
+    let outType = contentType;
+
+    // WhatsApp ignore les aperçus dont l'image dépasse ~600 Ko et préfère un
+    // ratio 1.91:1. On normalise : canevas 1200x630, image entière centrée
+    // (aucun recadrage : les titres incrustés restent lisibles), JPEG compressé.
+    try {
+      const image = await Image.decode(bytes);
+      const TARGET_W = 1200;
+      const TARGET_H = 630;
+      const scale = Math.min(TARGET_W / image.width, TARGET_H / image.height);
+      const w = Math.max(1, Math.round(image.width * scale));
+      const h = Math.max(1, Math.round(image.height * scale));
+      const resized = image.resize(w, h);
+
+      // Fond sombre proche de l'identité de marque.
+      const canvas = new Image(TARGET_W, TARGET_H);
+      canvas.fill(0x2b1f1aff);
+      canvas.composite(resized, Math.round((TARGET_W - w) / 2), Math.round((TARGET_H - h) / 2));
+
+      let encoded = await canvas.encodeJPEG(82);
+      if (encoded.byteLength > 300_000) encoded = await canvas.encodeJPEG(65);
+      bytes = encoded;
+      outType = "image/jpeg";
+    } catch (_e) {
+      // Si le décodage échoue, on sert l'original tel quel.
+    }
+
 
     return new Response(req.method === "HEAD" ? null : bytes, {
       status: 200,
       headers: {
         ...baseHeaders,
-        "Content-Type": contentType,
+        "Content-Type": outType,
         "Content-Length": String(bytes.byteLength),
         ETag: etag,
         // Cache CDN long, revalidation rapide côté client.
         "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
       },
     });
+
   } catch (_e) {
     return notFound();
   }
