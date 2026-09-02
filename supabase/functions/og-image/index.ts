@@ -93,19 +93,46 @@ Deno.serve(async (req) => {
     const contentType = upstream.headers.get("content-type") || "image/jpeg";
     if (!contentType.startsWith("image/")) return notFound();
 
-    const bytes = new Uint8Array(await upstream.arrayBuffer());
+    let bytes = new Uint8Array(await upstream.arrayBuffer());
+    let outType = contentType;
+
+    // WhatsApp ignore les aperçus dont l'image dépasse ~600 Ko et préfère un
+    // ratio proche de 1.91:1. On normalise donc : 1200x630 max, JPEG compressé.
+    try {
+      const image = await Image.decode(bytes);
+      const TARGET_W = 1200;
+      const TARGET_H = 630;
+      const scale = Math.max(TARGET_W / image.width, TARGET_H / image.height);
+      const resized = image.resize(
+        Math.max(TARGET_W, Math.round(image.width * scale)),
+        Math.max(TARGET_H, Math.round(image.height * scale)),
+      );
+      resized.crop(
+        Math.max(0, Math.round((resized.width - TARGET_W) / 2)),
+        Math.max(0, Math.round((resized.height - TARGET_H) / 2)),
+        Math.min(TARGET_W, resized.width),
+        Math.min(TARGET_H, resized.height),
+      );
+      let encoded = await resized.encodeJPEG(82);
+      if (encoded.byteLength > 300_000) encoded = await resized.encodeJPEG(65);
+      bytes = encoded;
+      outType = "image/jpeg";
+    } catch (_e) {
+      // Si le décodage échoue, on sert l'original tel quel.
+    }
 
     return new Response(req.method === "HEAD" ? null : bytes, {
       status: 200,
       headers: {
         ...baseHeaders,
-        "Content-Type": contentType,
+        "Content-Type": outType,
         "Content-Length": String(bytes.byteLength),
         ETag: etag,
         // Cache CDN long, revalidation rapide côté client.
         "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
       },
     });
+
   } catch (_e) {
     return notFound();
   }
