@@ -57,6 +57,34 @@ export const UserManagement = () => {
     }
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-delete-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Erreur lors de la suppression de l'utilisateur");
+
+      toast.success("Utilisateur supprimé avec succès");
+      refetch();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Erreur : " + (error as Error).message);
+    }
+  };
+
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
       const { error } = await supabase
@@ -87,7 +115,7 @@ export const UserManagement = () => {
         <h1 className="text-2xl font-bold">Gestion des utilisateurs</h1>
         <UserForm onSubmit={handleCreateUser} />
       </div>
-      <UserTable users={users || []} onRoleChange={handleRoleChange} />
+      <UserTable users={users || []} onRoleChange={handleRoleChange} onDeleteUser={handleDeleteUser} />
     </div>
   );
 };
