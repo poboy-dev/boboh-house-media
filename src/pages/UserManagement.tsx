@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { UserTable } from "@/components/users/UserTable";
+import { UserTable, type UserUpdate } from "@/components/users/UserTable";
 import { UserForm } from "@/components/users/UserForm";
 import { UserRole } from "@/types/user";
 import type { UserWithEmail } from "@/types/user";
@@ -85,6 +85,40 @@ export const UserManagement = () => {
     }
   };
 
+  const handleUpdateUser = async (userId: string, data: UserUpdate) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            userId,
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+          }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Erreur lors de la mise à jour de l'utilisateur");
+
+      toast.success("Utilisateur mis à jour avec succès");
+      refetch();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Erreur : " + (error as Error).message);
+      throw error;
+    }
+  };
+
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
       const { error } = await supabase
@@ -115,7 +149,7 @@ export const UserManagement = () => {
         <h1 className="text-2xl font-bold">Gestion des utilisateurs</h1>
         <UserForm onSubmit={handleCreateUser} />
       </div>
-      <UserTable users={users || []} onRoleChange={handleRoleChange} onDeleteUser={handleDeleteUser} />
+      <UserTable users={users || []} onRoleChange={handleRoleChange} onDeleteUser={handleDeleteUser} onUpdateUser={handleUpdateUser} />
     </div>
   );
 };
